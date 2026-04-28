@@ -7,533 +7,121 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --ink:    #0f0e0c;
-      --cream:  #f5f0e8;
-      --gold:   #c9a84c;
-      --gold-l: #e8d08a;
-      --rust:   #8b3a2a;
-      --paper:  #ede8de;
-      --shadow: rgba(15,14,12,0.18);
-    }
-    body {
-      min-height: 100vh;
-      background: var(--ink);
-      font-family: 'DM Sans', sans-serif;
-      display: flex;
-      overflow: hidden;
-    }
-
-    /* ── LEFT PANEL ── */
-    .left {
-      flex: 1;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 60px 64px;
-      overflow: hidden;
-    }
-    .left::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 80% 60% at 20% 50%, rgba(201,168,76,0.12) 0%, transparent 70%),
-        radial-gradient(ellipse 50% 80% at 80% 20%, rgba(139,58,42,0.10) 0%, transparent 60%);
-    }
-    .left::after {
-      content: '';
-      position: absolute;
-      right: 0; top: 10%; bottom: 10%;
-      width: 1px;
-      background: linear-gradient(to bottom, transparent, var(--gold), transparent);
-    }
-
-    .brand { position: relative; z-index: 1; margin-bottom: 60px; }
-    .brand-mark { display: inline-flex; align-items: center; gap: 12px; }
-    .brand-icon {
-      width: 44px; height: 44px;
-      border: 2px solid var(--gold);
-      display: grid; place-items: center;
-      transform: rotate(45deg);
-    }
-    .brand-icon svg { transform: rotate(-45deg); }
-    .brand-name {
-      font-family: 'Playfair Display', serif;
-      font-size: 28px; font-weight: 900;
-      color: var(--cream); letter-spacing: 2px;
-    }
-    .brand-name span { color: var(--gold); }
-
-    .tagline-block { position: relative; z-index: 1; }
-    .tagline-block h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(36px, 4vw, 56px);
-      font-weight: 700; line-height: 1.15;
-      color: var(--cream); margin-bottom: 20px;
-    }
-    .tagline-block h1 em { font-style: italic; color: var(--gold); }
-    .tagline-block p {
-      font-size: 15px;
-      color: rgba(245,240,232,0.55);
-      font-weight: 300; line-height: 1.7; max-width: 340px;
-    }
-
-    .shelves {
-      position: absolute;
-      bottom: 0; left: 0; right: 0; height: 220px;
-      display: flex; flex-direction: column; justify-content: flex-end;
-      padding: 0 40px; opacity: 0.22; pointer-events: none;
-    }
-    .shelf {
-      width: 100%; height: 3px;
-      background: var(--gold); margin-bottom: 48px; position: relative;
-    }
-    .books {
-      position: absolute; bottom: 3px; left: 0;
-      display: flex; gap: 3px; align-items: flex-end;
-    }
-    .book {
-      width: var(--w, 14px); height: var(--h, 50px);
-      background: var(--c, #c9a84c); border-radius: 1px 2px 2px 1px;
-    }
-
-    /* ── LIVE STATS ── */
-    .stats {
-      position: absolute;
-      bottom: 48px; left: 64px;
-      z-index: 1; display: flex; gap: 40px;
-    }
-    .stat-num {
-      font-family: 'Playfair Display', serif;
-      font-size: 28px; font-weight: 700; color: var(--gold);
-      transition: all 0.4s ease;
-    }
-    .stat-lbl {
-      font-size: 11px; letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: rgba(245,240,232,0.4); margin-top: 2px;
-    }
-    /* Loading pulse */
-    .stat-num.loading {
-      opacity: 0.4;
-      animation: pulse 1s ease-in-out infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 0.4; }
-      50%       { opacity: 0.8; }
-    }
-
-    /* ── RIGHT PANEL ── */
-    .right {
-      width: 460px; min-height: 100vh;
-      background: var(--cream);
-      display: flex; flex-direction: column;
-      justify-content: center;
-      padding: 60px 52px; position: relative;
-    }
-    .right::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; height: 4px;
-      background: linear-gradient(90deg, var(--rust), var(--gold), var(--rust));
-    }
-
-    .form-header { margin-bottom: 36px; }
-    .form-header h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 30px; font-weight: 700; color: var(--ink); margin-bottom: 6px;
-    }
-    .form-header p { font-size: 13.5px; color: #7a7060; }
-
-    .role-toggle {
-      display: flex; background: var(--paper);
-      border-radius: 8px; padding: 4px;
-      margin-bottom: 32px; gap: 4px;
-    }
-    .role-btn {
-      flex: 1; padding: 10px 0;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px; font-weight: 500;
-      letter-spacing: 0.5px;
-      border: none; border-radius: 6px;
-      cursor: pointer; transition: all 0.25s ease;
-      background: transparent; color: #9a8f7a;
-    }
-    .role-btn.active {
-      background: var(--ink); color: var(--gold);
-      box-shadow: 0 2px 8px var(--shadow);
-    }
-
-    .field { margin-bottom: 20px; }
-    .field label {
-      display: block; font-size: 11.5px; font-weight: 500;
-      letter-spacing: 1px; text-transform: uppercase;
-      color: #6a6050; margin-bottom: 8px;
-    }
-    .field input {
-      width: 100%; padding: 13px 16px;
-      background: #fff; border: 1.5px solid #ddd8cc;
-      border-radius: 8px; font-family: 'DM Sans', sans-serif;
-      font-size: 14.5px; color: var(--ink); outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .field input::placeholder { color: #b8b0a0; }
-    .field input:focus {
-      border-color: var(--gold);
-      box-shadow: 0 0 0 3px rgba(201,168,76,0.15);
-    }
-
-    .field-row {
-      display: flex; justify-content: space-between;
-      align-items: center; margin-bottom: 6px;
-    }
-    .field-row label { margin-bottom: 0; }
-    .forgot {
-      font-size: 12px; color: var(--rust);
-      text-decoration: none; font-weight: 500;
-    }
-    .forgot:hover { opacity: 0.7; }
-
-    .pw-wrap { position: relative; }
-    .pw-wrap input { padding-right: 44px; }
-    .pw-toggle {
-      position: absolute; right: 14px; top: 50%;
-      transform: translateY(-50%);
-      background: none; border: none;
-      cursor: pointer; padding: 4px; color: #9a8f7a;
-      display: grid; place-items: center;
-    }
-
-    .remember {
-      display: flex; align-items: center;
-      gap: 10px; margin-bottom: 28px;
-    }
-    .remember input[type=checkbox] {
-      width: 16px; height: 16px;
-      accent-color: var(--ink); cursor: pointer;
-    }
-    .remember label { font-size: 13px; color: #7a7060; cursor: pointer; }
-
-    .btn-login {
-      width: 100%; padding: 14px;
-      background: var(--ink); color: var(--gold);
-      border: none; border-radius: 8px;
-      font-family: 'Playfair Display', serif;
-      font-size: 16px; font-weight: 700; letter-spacing: 1px;
-      cursor: pointer; position: relative; overflow: hidden;
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
-    .btn-login:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(15,14,12,0.25);
-    }
-    .btn-login:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
-
-    .divider {
-      display: flex; align-items: center;
-      gap: 12px; margin: 24px 0;
-    }
-    .divider::before, .divider::after {
-      content: ''; flex: 1; height: 1px; background: #ddd8cc;
-    }
-    .divider span { font-size: 12px; color: #b0a898; }
-
-    .register-link {
-      text-align: center; font-size: 13.5px; color: #7a7060;
-    }
-    .register-link a { color: var(--rust); font-weight: 600; text-decoration: none; }
-    .register-link a:hover { text-decoration: underline; }
-
-    .staff-badge {
-      display: none; align-items: center; gap: 8px;
-      background: #fff8ee; border: 1px solid #e8d08a;
-      border-radius: 6px; padding: 10px 14px;
-      margin-bottom: 20px; font-size: 12.5px; color: #7a5c10;
-    }
-    .staff-badge.visible { display: flex; }
-
-    .toast {
-      position: fixed; top: 24px; right: 24px;
-      background: var(--ink); color: var(--cream);
-      padding: 14px 20px; border-radius: 8px;
-      font-size: 13.5px; border-left: 3px solid var(--gold);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-      transform: translateX(120%);
-      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
-      z-index: 999; max-width: 300px;
-    }
-    .toast.show  { transform: translateX(0); }
-    .toast.error { border-color: #e05a3a; }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .right > * { animation: fadeUp 0.5s ease both; }
-    .right > *:nth-child(1) { animation-delay: 0.05s; }
-    .right > *:nth-child(2) { animation-delay: 0.12s; }
-    .right > *:nth-child(3) { animation-delay: 0.18s; }
-
-    @keyframes fadeLeft {
-      from { opacity: 0; transform: translateX(-20px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
-    .tagline-block { animation: fadeLeft 0.7s ease both 0.1s; }
-    .stats         { animation: fadeLeft 0.7s ease both 0.3s; }
-
-    @media (max-width: 768px) {
-      body { flex-direction: column; overflow: auto; }
-      .left { padding: 48px 32px 32px; min-height: 260px; }
-      .left::after { display: none; }
-      .shelves, .stats { display: none; }
-      .right { width: 100%; padding: 40px 28px 60px; }
-    }
+    :root { --ink:#0f0e0c;--cream:#f5f0e8;--gold:#c9a84c;--rust:#8b3a2a;--paper:#ede8de;--shadow:rgba(15,14,12,0.18); }
+    body { min-height:100vh;background:var(--ink);font-family:'DM Sans',sans-serif;display:flex;overflow:hidden; }
+    .left { flex:1;position:relative;display:flex;flex-direction:column;justify-content:center;padding:60px 64px;overflow:hidden; }
+    .left::before { content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 20% 50%,rgba(201,168,76,.12) 0%,transparent 70%),radial-gradient(ellipse 50% 80% at 80% 20%,rgba(139,58,42,.10) 0%,transparent 60%); }
+    .left::after { content:'';position:absolute;right:0;top:10%;bottom:10%;width:1px;background:linear-gradient(to bottom,transparent,var(--gold),transparent); }
+    .brand { position:relative;z-index:1;margin-bottom:60px; }
+    .brand-mark { display:inline-flex;align-items:center;gap:12px; }
+    .brand-icon { width:44px;height:44px;border:2px solid var(--gold);display:grid;place-items:center;transform:rotate(45deg); }
+    .brand-icon svg { transform:rotate(-45deg); }
+    .brand-name { font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--cream);letter-spacing:2px; }
+    .brand-name span { color:var(--gold); }
+    .tagline-block { position:relative;z-index:1; }
+    .tagline-block h1 { font-family:'Playfair Display',serif;font-size:clamp(36px,4vw,56px);font-weight:700;line-height:1.15;color:var(--cream);margin-bottom:20px; }
+    .tagline-block h1 em { font-style:italic;color:var(--gold); }
+    .tagline-block p { font-size:15px;color:rgba(245,240,232,.55);font-weight:300;line-height:1.7;max-width:340px; }
+    .shelves { position:absolute;bottom:0;left:0;right:0;height:220px;display:flex;flex-direction:column;justify-content:flex-end;padding:0 40px;opacity:.22;pointer-events:none; }
+    .shelf { width:100%;height:3px;background:var(--gold);margin-bottom:48px;position:relative; }
+    .books { position:absolute;bottom:3px;left:0;display:flex;gap:3px;align-items:flex-end; }
+    .book { width:var(--w,14px);height:var(--h,50px);background:var(--c,#c9a84c);border-radius:1px 2px 2px 1px; }
+    .stats { position:absolute;bottom:48px;left:64px;z-index:1;display:flex;gap:40px; }
+    .stat-num { font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--gold);transition:all .4s ease; }
+    .stat-num.loading { opacity:.4;animation:pulse 1s ease-in-out infinite; }
+    .stat-lbl { font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(245,240,232,.4);margin-top:2px; }
+    @keyframes pulse { 0%,100%{opacity:.4}50%{opacity:.8} }
+    .right { width:460px;min-height:100vh;background:var(--cream);display:flex;flex-direction:column;justify-content:center;padding:60px 52px;position:relative; }
+    .right::before { content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--rust),var(--gold),var(--rust)); }
+    .form-header { margin-bottom:36px; }
+    .form-header h2 { font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--ink);margin-bottom:6px; }
+    .form-header p { font-size:13.5px;color:#7a7060; }
+    .role-toggle { display:flex;background:var(--paper);border-radius:8px;padding:4px;margin-bottom:32px;gap:4px; }
+    .role-btn { flex:1;padding:10px 0;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;letter-spacing:.5px;border:none;border-radius:6px;cursor:pointer;transition:all .25s;background:transparent;color:#9a8f7a; }
+    .role-btn.active { background:var(--ink);color:var(--gold);box-shadow:0 2px 8px var(--shadow); }
+    .field { margin-bottom:20px; }
+    .field label { display:block;font-size:11.5px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:#6a6050;margin-bottom:8px; }
+    .field input { width:100%;padding:13px 16px;background:#fff;border:1.5px solid #ddd8cc;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14.5px;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s; }
+    .field input::placeholder { color:#b8b0a0; }
+    .field input:focus { border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.15); }
+    .field-row { display:flex;justify-content:space-between;align-items:center;margin-bottom:6px; }
+    .field-row label { margin-bottom:0; }
+    .forgot { font-size:12px;color:var(--rust);text-decoration:none;font-weight:500; }
+    .forgot:hover { opacity:.7; }
+    .pw-wrap { position:relative; }
+    .pw-wrap input { padding-right:44px; }
+    .pw-toggle { position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;color:#9a8f7a;display:grid;place-items:center; }
+    .remember { display:flex;align-items:center;gap:10px;margin-bottom:28px; }
+    .remember input[type=checkbox] { width:16px;height:16px;accent-color:var(--ink);cursor:pointer; }
+    .remember label { font-size:13px;color:#7a7060;cursor:pointer; }
+    .btn-login { width:100%;padding:14px;background:var(--ink);color:var(--gold);border:none;border-radius:8px;font-family:'Playfair Display',serif;font-size:16px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:transform .15s,box-shadow .15s; }
+    .btn-login:hover { transform:translateY(-1px);box-shadow:0 6px 20px rgba(15,14,12,.25); }
+    .btn-login:disabled { opacity:.7;cursor:not-allowed;transform:none; }
+    .staff-badge { display:none;align-items:center;gap:8px;background:#fff8ee;border:1px solid #e8d08a;border-radius:6px;padding:10px 14px;margin-bottom:20px;font-size:12.5px;color:#7a5c10; }
+    .staff-badge.visible { display:flex; }
+    .toast { position:fixed;top:24px;right:24px;background:var(--ink);color:var(--cream);padding:14px 20px;border-radius:8px;font-size:13.5px;border-left:3px solid var(--gold);box-shadow:0 8px 24px rgba(0,0,0,.3);transform:translateX(120%);transition:transform .35s cubic-bezier(.34,1.56,.64,1);z-index:999;max-width:300px; }
+    .toast.show { transform:translateX(0); }
+    .toast.error { border-color:#e05a3a; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)} }
+    .right > * { animation:fadeUp .5s ease both; }
+    .right > *:nth-child(1){animation-delay:.05s}.right > *:nth-child(2){animation-delay:.12s}.right > *:nth-child(3){animation-delay:.18s}
+    @keyframes fadeLeft { from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)} }
+    .tagline-block { animation:fadeLeft .7s ease both .1s; }
+    .stats { animation:fadeLeft .7s ease both .3s; }
+    @media(max-width:768px){body{flex-direction:column;overflow:auto}.left{padding:48px 32px 32px;min-height:260px}.left::after{display:none}.shelves,.stats{display:none}.right{width:100%;padding:40px 28px 60px}}
   </style>
 </head>
 <body>
-
-  <!-- LEFT PANEL -->
   <div class="left">
     <div class="brand">
       <div class="brand-mark">
-        <div class="brand-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2">
-            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-          </svg>
-        </div>
+        <div class="brand-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
         <span class="brand-name">Libra<span>X</span></span>
       </div>
     </div>
-
     <div class="tagline-block">
       <h1>Knowledge,<br/><em>at your<br/>fingertips.</em></h1>
       <p>A unified platform for students and staff to discover, manage, and track the library's entire collection.</p>
     </div>
-
     <div class="shelves">
-      <div class="shelf">
-        <div class="books">
-          <div class="book" style="--w:10px;--h:42px;--c:#8b3a2a"></div>
-          <div class="book" style="--w:14px;--h:56px;--c:#c9a84c"></div>
-          <div class="book" style="--w:9px;--h:38px;--c:#5a7a4a"></div>
-          <div class="book" style="--w:16px;--h:50px;--c:#4a6a8a"></div>
-          <div class="book" style="--w:11px;--h:45px;--c:#c9a84c"></div>
-          <div class="book" style="--w:13px;--h:52px;--c:#8b3a2a"></div>
-          <div class="book" style="--w:8px;--h:36px;--c:#7a5a9a"></div>
-          <div class="book" style="--w:15px;--h:48px;--c:#5a7a4a"></div>
-          <div class="book" style="--w:10px;--h:44px;--c:#c9a84c"></div>
-          <div class="book" style="--w:12px;--h:40px;--c:#4a6a8a"></div>
-          <div class="book" style="--w:14px;--h:54px;--c:#8b3a2a"></div>
-          <div class="book" style="--w:9px;--h:35px;--c:#c9a84c"></div>
-        </div>
-      </div>
-      <div class="shelf">
-        <div class="books">
-          <div class="book" style="--w:13px;--h:48px;--c:#4a6a8a"></div>
-          <div class="book" style="--w:10px;--h:40px;--c:#c9a84c"></div>
-          <div class="book" style="--w:15px;--h:55px;--c:#8b3a2a"></div>
-          <div class="book" style="--w:9px;--h:37px;--c:#5a7a4a"></div>
-          <div class="book" style="--w:14px;--h:50px;--c:#7a5a9a"></div>
-          <div class="book" style="--w:11px;--h:43px;--c:#c9a84c"></div>
-          <div class="book" style="--w:16px;--h:58px;--c:#4a6a8a"></div>
-          <div class="book" style="--w:10px;--h:42px;--c:#8b3a2a"></div>
-        </div>
-      </div>
+      <div class="shelf"><div class="books"><div class="book" style="--w:10px;--h:42px;--c:#8b3a2a"></div><div class="book" style="--w:14px;--h:56px;--c:#c9a84c"></div><div class="book" style="--w:9px;--h:38px;--c:#5a7a4a"></div><div class="book" style="--w:16px;--h:50px;--c:#4a6a8a"></div><div class="book" style="--w:11px;--h:45px;--c:#c9a84c"></div><div class="book" style="--w:13px;--h:52px;--c:#8b3a2a"></div><div class="book" style="--w:8px;--h:36px;--c:#7a5a9a"></div><div class="book" style="--w:15px;--h:48px;--c:#5a7a4a"></div><div class="book" style="--w:10px;--h:44px;--c:#c9a84c"></div><div class="book" style="--w:12px;--h:40px;--c:#4a6a8a"></div><div class="book" style="--w:14px;--h:54px;--c:#8b3a2a"></div><div class="book" style="--w:9px;--h:35px;--c:#c9a84c"></div></div></div>
+      <div class="shelf"><div class="books"><div class="book" style="--w:13px;--h:48px;--c:#4a6a8a"></div><div class="book" style="--w:10px;--h:40px;--c:#c9a84c"></div><div class="book" style="--w:15px;--h:55px;--c:#8b3a2a"></div><div class="book" style="--w:9px;--h:37px;--c:#5a7a4a"></div><div class="book" style="--w:14px;--h:50px;--c:#7a5a9a"></div><div class="book" style="--w:11px;--h:43px;--c:#c9a84c"></div><div class="book" style="--w:16px;--h:58px;--c:#4a6a8a"></div><div class="book" style="--w:10px;--h:42px;--c:#8b3a2a"></div></div></div>
     </div>
-
-    <!-- LIVE STATS — updated from /api/public/stats -->
     <div class="stats">
-      <div class="stat">
-        <div class="stat-num loading" id="stat-books">—</div>
-        <div class="stat-lbl">Books</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num loading" id="stat-members">—</div>
-        <div class="stat-lbl">Members</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num loading" id="stat-rate">—</div>
-        <div class="stat-lbl">Return Rate</div>
-      </div>
+      <div class="stat"><div class="stat-num loading" id="stat-books">—</div><div class="stat-lbl">Books</div></div>
+      <div class="stat"><div class="stat-num loading" id="stat-members">—</div><div class="stat-lbl">Members</div></div>
+      <div class="stat"><div class="stat-num loading" id="stat-rate">—</div><div class="stat-lbl">Return Rate</div></div>
     </div>
   </div>
 
-  <!-- RIGHT PANEL -->
   <div class="right">
-    <div class="form-header">
-      <h2>Welcome back</h2>
-      <p>Sign in to access the library portal</p>
-    </div>
-
+    <div class="form-header"><h2>Welcome back</h2><p>Sign in to access the library portal</p></div>
     <div class="role-toggle" role="group">
       <button class="role-btn active" onclick="setRole('student')" id="btn-student">🎓 Student</button>
-      <button class="role-btn"        onclick="setRole('staff')"   id="btn-staff">👩‍💼 Staff</button>
+      <button class="role-btn" onclick="setRole('staff')" id="btn-staff">👩‍💼 Staff</button>
     </div>
-
-    <div class="staff-badge" id="staff-badge">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="12" y1="8" x2="12" y2="12"/>
-        <line x1="12" y1="16" x2="12.01" y2="16"/>
-      </svg>
-      Staff accounts have elevated privileges. Use your employee credentials.
-    </div>
-
+    <div class="staff-badge" id="staff-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Staff accounts have elevated privileges. Use your employee credentials.</div>
     <form id="login-form" onsubmit="handleLogin(event)" novalidate>
+      <div class="field"><label for="user-id" id="id-label">Student ID</label><input type="text" id="user-id" placeholder="e.g. STU2024001" autocomplete="username" required/></div>
       <div class="field">
-        <label for="user-id" id="id-label">Student ID</label>
-        <input type="text" id="user-id" placeholder="e.g. STU2024001" autocomplete="username" required/>
+        <div class="field-row"><label for="password">Password</label><a href="#" class="forgot" onclick="showForgot(event)">Forgot password?</a></div>
+        <div class="pw-wrap"><input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" required/><button type="button" class="pw-toggle" onclick="togglePw()"><svg id="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
       </div>
-      <div class="field">
-        <div class="field-row">
-          <label for="password">Password</label>
-          <a href="#" class="forgot" onclick="showForgot(event)">Forgot password?</a>
-        </div>
-        <div class="pw-wrap">
-          <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" required/>
-          <button type="button" class="pw-toggle" onclick="togglePw()">
-            <svg id="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-      <div class="remember">
-        <input type="checkbox" id="remember"/>
-        <label for="remember">Remember me for 30 days</label>
-      </div>
+      <div class="remember"><input type="checkbox" id="remember"/><label for="remember">Remember me for 30 days</label></div>
       <button type="submit" class="btn-login" id="login-btn">Sign In</button>
     </form>
-
-    <div class="divider"><span>OR</span></div>
-    <div class="register-link">New student? <a href="#">Request library access →</a></div>
   </div>
-
   <div class="toast" id="toast"></div>
 
   <script>
     let currentRole = 'student';
-
-    // ── LOAD LIVE STATS from Flask ──────────────────────────
-    async function loadStats() {
-      try {
-        const r = await fetch('/api/public/stats');
-        const d = await r.json();
-        if (d.success) {
-          animateCount('stat-books',   d.books);
-          animateCount('stat-members', d.members);
-          document.getElementById('stat-rate').textContent = d.return_rate;
-          document.getElementById('stat-rate').classList.remove('loading');
-        }
-      } catch (e) {
-        // Fallback to static values if Flask not reachable
-        document.getElementById('stat-books').textContent   = '12,400';
-        document.getElementById('stat-members').textContent = '3,200';
-        document.getElementById('stat-rate').textContent    = '98%';
-        document.querySelectorAll('.stat-num').forEach(el => el.classList.remove('loading'));
-      }
-    }
-
-    // ── Animate number counting up ──────────────────────────
-    function animateCount(id, valueStr) {
-      const el     = document.getElementById(id);
-      const target = parseInt(valueStr.replace(/,/g, ''));
-      const duration = 1200;
-      const step   = Math.ceil(target / (duration / 16));
-      let current  = 0;
-      el.classList.remove('loading');
-      const timer = setInterval(() => {
-        current += step;
-        if (current >= target) {
-          current = target;
-          clearInterval(timer);
-        }
-        el.textContent = current.toLocaleString('en-IN');
-      }, 16);
-    }
-
-    // ── Role switcher ───────────────────────────────────────
-    function setRole(role) {
-      currentRole = role;
-      document.getElementById('btn-student').classList.toggle('active', role === 'student');
-      document.getElementById('btn-staff').classList.toggle('active',   role === 'staff');
-      document.getElementById('id-label').textContent  = role === 'student' ? 'Student ID' : 'Employee ID';
-      document.getElementById('user-id').placeholder   = role === 'student' ? 'e.g. STU2024001' : 'e.g. EMP1042';
-      document.getElementById('staff-badge').classList.toggle('visible', role === 'staff');
-    }
-
-    // ── Show/hide password ──────────────────────────────────
-    function togglePw() {
-      const pw   = document.getElementById('password');
-      const icon = document.getElementById('eye-icon');
-      if (pw.type === 'password') {
-        pw.type = 'text';
-        icon.innerHTML = `
-          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94
-                   M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19
-                   m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-          <line x1="1" y1="1" x2="23" y2="23"/>`;
-      } else {
-        pw.type = 'password';
-        icon.innerHTML = `
-          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-          <circle cx="12" cy="12" r="3"/>`;
-      }
-    }
-
-    // ── Toast ───────────────────────────────────────────────
-    function showToast(msg, type = 'info') {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.className   = 'toast show' + (type === 'error' ? ' error' : '');
-      setTimeout(() => t.classList.remove('show'), 3500);
-    }
-
-    function showForgot(e) {
-      e.preventDefault();
-      showToast('Password reset link will be sent to your registered email.');
-    }
-
-    // ── Login — calls Flask /api/login ──────────────────────
-    async function handleLogin(e) {
-      e.preventDefault();
-      const id       = document.getElementById('user-id').value.trim();
-      const pw       = document.getElementById('password').value;
-      const remember = document.getElementById('remember').checked;
-      const btn      = document.getElementById('login-btn');
-
-      if (!id || !pw) { showToast('Please fill in all fields.', 'error'); return; }
-
-      btn.textContent = 'Signing in…';
-      btn.disabled    = true;
-
-      try {
-        const response = await fetch('/api/login', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id, password: pw, role: currentRole, remember })
-        });
-        const result = await response.json();
-        if (result.success) {
-          showToast(result.message);
-          setTimeout(() => { window.location.href = result.redirect; }, 1200);
-        } else {
-          showToast(result.message, 'error');
-          btn.textContent = 'Sign In';
-          btn.disabled    = false;
-        }
-      } catch (err) {
-        showToast('Cannot connect to server. Make sure Flask is running.', 'error');
-        btn.textContent = 'Sign In';
-        btn.disabled    = false;
-      }
-    }
-
-    // ── Init ────────────────────────────────────────────────
+    async function loadStats(){try{const r=await fetch('/api/public/stats');const d=await r.json();if(d.success){animateCount('stat-books',d.books);animateCount('stat-members',d.members);document.getElementById('stat-rate').textContent=d.return_rate;document.getElementById('stat-rate').classList.remove('loading');}}catch(e){document.getElementById('stat-books').textContent='12,400';document.getElementById('stat-members').textContent='3,200';document.getElementById('stat-rate').textContent='98%';document.querySelectorAll('.stat-num').forEach(el=>el.classList.remove('loading'));}}
+    function animateCount(id,valueStr){const el=document.getElementById(id);const target=parseInt(valueStr.replace(/,/g,''));const step=Math.ceil(target/(1200/16));let current=0;el.classList.remove('loading');const timer=setInterval(()=>{current+=step;if(current>=target){current=target;clearInterval(timer);}el.textContent=current.toLocaleString('en-IN');},16);}
+    function setRole(role){currentRole=role;document.getElementById('btn-student').classList.toggle('active',role==='student');document.getElementById('btn-staff').classList.toggle('active',role==='staff');document.getElementById('id-label').textContent=role==='student'?'Student ID':'Employee ID';document.getElementById('user-id').placeholder=role==='student'?'e.g. STU2024001':'e.g. EMP1042';document.getElementById('staff-badge').classList.toggle('visible',role==='staff');}
+    function togglePw(){const pw=document.getElementById('password');const icon=document.getElementById('eye-icon');if(pw.type==='password'){pw.type='text';icon.innerHTML='<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';}else{pw.type='password';icon.innerHTML='<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';}}
+    function showToast(msg,type='info'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type==='error'?' error':'');setTimeout(()=>t.classList.remove('show'),3500);}
+    function showForgot(e){e.preventDefault();showToast('Contact the library staff to reset your password.');}
+    async function handleLogin(e){e.preventDefault();const id=document.getElementById('user-id').value.trim();const pw=document.getElementById('password').value;const remember=document.getElementById('remember').checked;const btn=document.getElementById('login-btn');if(!id||!pw){showToast('Please fill in all fields.','error');return}btn.textContent='Signing in…';btn.disabled=true;try{const response=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,password:pw,role:currentRole,remember})});const result=await response.json();if(result.success){showToast(result.message);setTimeout(()=>{window.location.href=result.redirect;},1200);}else{showToast(result.message,'error');btn.textContent='Sign In';btn.disabled=false;}}catch(err){showToast('Cannot connect to server. Make sure Flask is running.','error');btn.textContent='Sign In';btn.disabled=false;}}
     loadStats();
   </script>
 </body>

@@ -1,0 +1,10 @@
+ngrok config add-authtoken 3BFIvgRioLSnqXobIGKHtzOJ2tb_4hM57NscbxEhh4jmPpWH5
+
+
+ngrok http 5000
+
+
+
+
+
+taskkill /f /im ngrok.exe
