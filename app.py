@@ -3,16 +3,20 @@ import hashlib
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from functools import wraps
 from datetime import timedelta
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = 'librax_secret_key_2024'
 app.permanent_session_lifetime = timedelta(days=30)
 
 DB_CONFIG = {
-    "user":     "system",
-    "password": "database",
-    "dsn":      "localhost:1521/XE",
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "dsn": os.getenv("DB_DSN")
 }
+app.secret_key = os.getenv("SECRET_KEY")
 
 def get_db():
     return oracledb.connect(user=DB_CONFIG["user"], password=DB_CONFIG["password"], dsn=DB_CONFIG["dsn"])
