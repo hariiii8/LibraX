@@ -3,239 +3,410 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>LibraX – Staff Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <title>LibraX — Staff Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--bg:#0f0e0c;--surface:#1a1814;--surface2:#211f1a;--ink:#f0ece3;--ink2:#9a9080;--gold:#c9a84c;--gold-bg:rgba(201,168,76,.12);--rust:#8b3a2a;--green:#2e6b4f;--red:#c0392b;--border:rgba(255,255,255,.08)}
-    body{background:var(--bg);font-family:'Sora',sans-serif;color:var(--ink);min-height:100vh;display:flex}
-    .sidebar{width:240px;background:var(--surface);min-height:100vh;display:flex;flex-direction:column;padding:32px 0;position:fixed;top:0;left:0;bottom:0;z-index:100;border-right:1px solid var(--border)}
-    .sidebar-logo{padding:0 28px 32px;border-bottom:1px solid var(--border);margin-bottom:24px}
-    .logo-text{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--ink);letter-spacing:1px}
-    .logo-text span{color:var(--gold)}
-    .logo-role{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-top:4px;opacity:.7}
-    .nav-section{padding:0 16px;margin-bottom:8px}
-    .nav-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.2);padding:0 12px;margin-bottom:6px}
-    .nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:8px;cursor:pointer;transition:all .2s;color:rgba(255,255,255,.4);font-size:13.5px;text-decoration:none;margin-bottom:2px;position:relative}
-    .nav-item:hover{background:rgba(255,255,255,.06);color:var(--ink)}
-    .nav-item.active{background:var(--gold-bg);color:var(--gold);font-weight:600;border:1px solid rgba(201,168,76,.2)}
-    .nav-badge{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:#e05a3a;color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;min-width:18px;text-align:center;display:none}
-    .sidebar-footer{margin-top:auto;padding:24px 16px 0;border-top:1px solid var(--border)}
-    .user-card{display:flex;align-items:center;gap:12px;padding:12px;border-radius:8px;background:rgba(255,255,255,.04)}
-    .user-avatar{width:36px;height:36px;border-radius:50%;background:var(--gold);display:grid;place-items:center;font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#1a1814;flex-shrink:0}
-    .user-name{font-size:13px;font-weight:500;color:var(--ink)}
-    .user-role{font-size:10px;color:var(--gold);margin-top:1px;text-transform:capitalize;opacity:.8}
-    .logout-btn{margin-left:auto;background:none;border:none;color:rgba(255,255,255,.25);cursor:pointer;padding:4px;transition:color .2s}
-    .logout-btn:hover{color:var(--gold)}
-    .main{margin-left:240px;flex:1;padding:40px 48px;max-width:calc(100vw - 240px)}
-    .page-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:36px}
-    .page-header h1{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--ink)}
-    .page-header h1 span{font-style:italic;color:var(--gold)}
-    .page-date{font-size:12px;color:var(--ink2);margin-top:4px}
-    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:36px}
-    .stat-card{background:var(--surface);border-radius:14px;padding:24px;border:1px solid var(--border);position:relative;overflow:hidden}
-    .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent,var(--gold))}
-    .stat-icon{width:40px;height:40px;border-radius:10px;background:var(--icon-bg,var(--gold-bg));display:grid;place-items:center;margin-bottom:16px}
-    .stat-num{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:var(--ink);line-height:1;margin-bottom:4px}
-    .stat-label{font-size:12px;color:var(--ink2)}
-    .card{background:var(--surface);border-radius:14px;border:1px solid var(--border);overflow:hidden}
-    .card+.card{margin-top:24px}
-    .card-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border)}
-    .card-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--ink)}
-    /* ── SCROLLABLE TABLE — opaque sticky header ── */
-    .table-scroll{overflow-y:auto;max-height:300px}
-    .table-scroll::-webkit-scrollbar{width:4px}
-    .table-scroll::-webkit-scrollbar-track{background:transparent}
-    .table-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:2px}
-    .table-scroll::-webkit-scrollbar-thumb:hover{background:rgba(201,168,76,.4)}
-    .btn{padding:8px 16px;border-radius:8px;font-family:'Sora',sans-serif;font-size:12.5px;font-weight:500;cursor:pointer;border:none;transition:all .2s}
-    .btn-gold{background:var(--gold);color:#1a1814}.btn-gold:hover{opacity:.85}
-    .btn-green{background:rgba(46,107,79,.2);color:#5dba8a;border:1px solid rgba(46,107,79,.3)}
-    .btn-danger{background:rgba(192,57,43,.15);color:#e05a3a;border:1px solid rgba(192,57,43,.3)}.btn-danger:hover{background:rgba(192,57,43,.25)}
-    .btn-outline{background:transparent;color:var(--gold);border:1px solid rgba(201,168,76,.4)}.btn-outline:hover{background:var(--gold-bg)}
-    .btn-sm{padding:5px 12px;font-size:11.5px}
-    .book-table{width:100%;border-collapse:collapse}
-    /* ── KEY FIX: solid opaque background on sticky header ── */
-    .book-table th{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--ink2);font-weight:500;padding:12px 24px;text-align:left;background:#1a1814;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:5}
-    .book-table td{padding:14px 24px;font-size:13.5px;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--ink)}
-    .book-table tr:last-child td{border-bottom:none}
-    .book-table tr:hover td{background:rgba(255,255,255,.02)}
-    .book-cover{width:36px;height:48px;border-radius:4px;display:grid;place-items:center;font-size:18px;flex-shrink:0}
-    .book-info{display:flex;align-items:center;gap:14px}
-    .book-title-text{font-weight:500;font-size:13.5px;color:var(--ink)}
-    .book-author-text{font-size:11.5px;color:var(--ink2);margin-top:2px}
-    .badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500}
-    .badge-green{background:rgba(46,107,79,.2);color:#5dba8a}
-    .badge-red{background:rgba(192,57,43,.2);color:#e05a3a}
-    .badge-gold{background:var(--gold-bg);color:var(--gold)}
-    .badge-orange{background:rgba(240,165,0,.15);color:#f0a500}
-    .badge-blue{background:rgba(74,106,138,.2);color:#7aacda}
-    .badge-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
-    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-    .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px}
-    .search-row{display:flex;gap:12px;align-items:center;padding:16px 24px;border-bottom:1px solid var(--border)}
-    .search-input{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:9px 14px;flex:1}
-    .search-input:focus-within{border-color:var(--gold)}
-    .search-input input{border:none;outline:none;font-family:'Sora',sans-serif;font-size:13px;color:var(--ink);background:transparent;width:100%}
-    .search-input input::placeholder{color:rgba(255,255,255,.2)}
-    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;place-items:center}
-    .modal-overlay.open{display:grid}
-    .modal{background:var(--surface2);border-radius:16px;border:1px solid var(--border);padding:32px;width:480px;max-width:95vw}
-    .modal h3{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:20px;color:var(--ink)}
-    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-    .field{display:flex;flex-direction:column;gap:6px}
-    .field label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ink2)}
-    .field input,.field select{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-family:'Sora',sans-serif;font-size:13.5px;color:var(--ink);outline:none;transition:border-color .2s}
-    .field input:focus,.field select:focus{border-color:var(--gold)}
-    .field select option{background:#211f1a}
-    .modal-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:24px;padding-top:20px;border-top:1px solid var(--border)}
-    .req-item{display:flex;align-items:center;gap:16px;padding:16px 24px;border-bottom:1px solid var(--border)}
-    .req-item:last-child{border-bottom:none}
-    .req-info{flex:1}
-    .req-student{font-size:13px;font-weight:500;color:var(--ink)}
-    .req-book{font-size:12px;color:var(--ink2);margin-top:2px}
-    .req-date{font-size:11px;color:var(--ink2);margin-top:2px}
-    .req-actions{display:flex;gap:8px}
-    .accruing-note{font-size:11px;color:#f0a500;font-style:italic}
-    .toast{position:fixed;top:24px;right:24px;background:var(--surface2);color:var(--ink);padding:14px 20px;border-radius:8px;font-size:13.5px;border-left:3px solid var(--gold);box-shadow:0 8px 24px rgba(0,0,0,.5);transform:translateX(120%);transition:transform .35s cubic-bezier(.34,1.56,.64,1);z-index:999;max-width:300px}
-    .toast.show{transform:translateX(0)}.toast.error{border-color:#e05a3a}
-    .empty{text-align:center;padding:40px 24px;color:var(--ink2);font-size:13px}
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d0c0a;
+      --surface: #141210;
+      --surface2: #1c1a16;
+      --surface3: #221f1a;
+      --ink: #f0ece3;
+      --ink2: #8a8070;
+      --gold: #b8923a;
+      --gold2: #d4aa5a;
+      --gold-bg: rgba(184,146,58,.1);
+      --rust: #7a3828;
+      --green: #2a6048;
+      --red: #b03020;
+      --border: rgba(255,255,255,.07);
+      --border2: rgba(184,146,58,.15);
+    }
+
+    body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--ink); min-height: 100vh; display: flex; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 248px; background: var(--surface);
+      min-height: 100vh; display: flex; flex-direction: column;
+      padding: 32px 0; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
+      border-right: 1px solid var(--border);
+    }
+    .sidebar-logo { padding: 0 28px 30px; border-bottom: 1px solid var(--border); margin-bottom: 22px; }
+    .logo-text { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: var(--ink); letter-spacing: 2px; }
+    .logo-text em { color: var(--gold2); font-style: normal; }
+    .logo-role { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,.2); margin-top: 4px; }
+
+    .nav-section { padding: 0 14px; }
+    .nav-label { font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,.15); padding: 0 12px; margin-bottom: 6px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 8px; cursor: pointer;
+      color: rgba(255,255,255,.32); font-size: 13px; text-decoration: none;
+      margin-bottom: 2px; position: relative; transition: all .22s ease;
+      border: 1px solid transparent;
+    }
+    .nav-item:hover { background: rgba(255,255,255,.05); color: var(--ink); transform: translateX(2px); }
+    .nav-item.active { background: linear-gradient(135deg, rgba(184,146,58,.14), rgba(212,170,90,.06)); color: var(--gold2); font-weight: 500; border-color: rgba(184,146,58,.18); }
+    .nav-dot { position: absolute; left: -1px; top: 50%; transform: translateY(-50%); width: 3px; height: 18px; background: var(--gold); border-radius: 0 2px 2px 0; opacity: 0; transition: opacity .22s; }
+    .nav-item.active .nav-dot { opacity: 1; }
+    .nav-badge { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: #b03020; color: #fff; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 10px; display: none; }
+
+    .sidebar-footer { margin-top: auto; padding: 20px 14px 0; border-top: 1px solid var(--border); }
+    .user-card { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 10px; background: rgba(255,255,255,.03); border: 1px solid var(--border); }
+    .user-avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--gold2)); display: grid; place-items: center; font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 700; color: #0d0c0a; flex-shrink: 0; }
+    .user-name { font-size: 12.5px; font-weight: 500; color: var(--ink); }
+    .user-role { font-size: 10px; color: var(--gold2); margin-top: 1px; opacity: .7; text-transform: capitalize; }
+    .logout-btn { margin-left: auto; background: none; border: none; color: rgba(255,255,255,.18); cursor: pointer; padding: 4px; transition: color .2s; }
+    .logout-btn:hover { color: var(--gold2); }
+
+    /* ── MAIN ── */
+    .main { margin-left: 248px; flex: 1; padding: 38px 46px; max-width: calc(100vw - 248px); }
+
+    /* ── SECTION ANIMATION ── */
+    .section { animation: sectionIn .42s cubic-bezier(.16,1,.3,1) both; }
+    @keyframes sectionIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── PAGE HEADER ── */
+    .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; }
+    .page-header h1 { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 400; color: var(--ink); }
+    .page-header h1 em { font-style: italic; color: var(--gold2); }
+    .page-date { font-size: 11.5px; color: var(--ink2); margin-top: 4px; letter-spacing: .3px; }
+
+    /* ── STATS ── */
+    .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 28px; }
+    .stat-card {
+      background: var(--surface2); border-radius: 13px; padding: 20px 22px;
+      border: 1px solid var(--border); position: relative; overflow: hidden;
+      transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s;
+      animation: cardIn .5s cubic-bezier(.16,1,.3,1) both;
+    }
+    .stat-card:nth-child(1){animation-delay:.05s} .stat-card:nth-child(2){animation-delay:.1s}
+    .stat-card:nth-child(3){animation-delay:.15s} .stat-card:nth-child(4){animation-delay:.2s}
+    .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0,0,0,.3); }
+    @keyframes cardIn { from { opacity: 0; transform: translateY(18px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--accent, var(--gold)); }
+    .stat-card::after { content: ''; position: absolute; top: -30px; right: -30px; width: 80px; height: 80px; background: radial-gradient(circle, var(--glow, rgba(184,146,58,.1)) 0%, transparent 70%); }
+    .stat-icon { width: 34px; height: 34px; border-radius: 8px; background: var(--icon-bg, var(--gold-bg)); display: grid; place-items: center; margin-bottom: 14px; }
+    .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 34px; font-weight: 600; line-height: 1; margin-bottom: 3px; color: var(--ink); }
+    .stat-label { font-size: 11px; color: var(--ink2); letter-spacing: .2px; }
+
+    /* ── CARDS ── */
+    .card { background: var(--surface2); border-radius: 13px; border: 1px solid var(--border); overflow: hidden; transition: box-shadow .3s; }
+    .card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.25); }
+    .card + .card { margin-top: 20px; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 22px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .card-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: var(--ink); }
+
+    /* ── SCROLLABLE TABLE ── */
+    .table-scroll { overflow-y: auto; max-height: 300px; }
+    .table-scroll::-webkit-scrollbar { width: 3px; }
+    .table-scroll::-webkit-scrollbar-track { background: transparent; }
+    .table-scroll::-webkit-scrollbar-thumb { background: rgba(184,146,58,.2); border-radius: 2px; }
+    .table-scroll::-webkit-scrollbar-thumb:hover { background: rgba(184,146,58,.4); }
+
+    /* ── TABLE ── */
+    .book-table { width: 100%; border-collapse: collapse; }
+    .book-table th { font-size: 9.5px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink2); font-weight: 500; padding: 10px 22px; text-align: left; background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 5; }
+    .book-table td { padding: 12px 22px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; color: var(--ink); transition: background .15s; }
+    .book-table tr:last-child td { border-bottom: none; }
+    .book-table tbody tr:hover td { background: rgba(255,255,255,.02); }
+    .book-cover { width: 32px; height: 44px; border-radius: 3px; display: grid; place-items: center; font-size: 17px; flex-shrink: 0; }
+    .book-info { display: flex; align-items: center; gap: 12px; }
+    .book-title-text { font-weight: 500; font-size: 13px; color: var(--ink); }
+    .book-author-text { font-size: 11px; color: var(--ink2); margin-top: 1px; }
+
+    /* ── BADGES ── */
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 20px; font-size: 10.5px; font-weight: 500; }
+    .badge-green { background: rgba(42,96,72,.2); color: #5dba8a; }
+    .badge-red { background: rgba(176,48,32,.2); color: #e05a3a; }
+    .badge-gold { background: var(--gold-bg); color: var(--gold2); }
+    .badge-orange { background: rgba(200,120,0,.15); color: #e09030; }
+    .badge-blue { background: rgba(74,106,138,.2); color: #7aacda; }
+    .badge-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+    /* ── BUTTONS ── */
+    .btn { padding: 7px 14px; border-radius: 7px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; border: none; transition: all .2s; }
+    .btn-gold { background: var(--gold); color: #0d0c0a; }
+    .btn-gold:hover { opacity: .85; transform: translateY(-1px); }
+    .btn-green { background: rgba(42,96,72,.2); color: #5dba8a; border: 1px solid rgba(42,96,72,.3); }
+    .btn-green:hover { background: rgba(42,96,72,.3); }
+    .btn-danger { background: rgba(176,48,32,.15); color: #e05a3a; border: 1px solid rgba(176,48,32,.3); }
+    .btn-danger:hover { background: rgba(176,48,32,.25); }
+    .btn-outline { background: transparent; color: var(--gold2); border: 1px solid rgba(184,146,58,.3); }
+    .btn-outline:hover { background: var(--gold-bg); }
+    .btn-sm { padding: 5px 10px; font-size: 11px; }
+    .btn-actions { display: flex; gap: 5px; flex-wrap: wrap; }
+
+    /* ── GRID ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+    /* ── SEARCH ── */
+    .search-row { display: flex; align-items: center; padding: 14px 22px; border-bottom: 1px solid var(--border); }
+    .search-input { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,.04); border: 1px solid var(--border); border-radius: 8px; padding: 8px 13px; flex: 1; transition: border-color .2s; }
+    .search-input:focus-within { border-color: rgba(184,146,58,.4); }
+    .search-input input { border: none; outline: none; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--ink); background: transparent; width: 100%; }
+    .search-input input::placeholder { color: rgba(255,255,255,.18); }
+
+    /* ── MODAL ── */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 200; place-items: center; backdrop-filter: blur(4px); }
+    .modal-overlay.open { display: grid; animation: fadeIn .2s ease both; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal { background: var(--surface3); border-radius: 16px; border: 1px solid var(--border2); padding: 30px; width: 480px; max-width: 95vw; animation: modalIn .3s cubic-bezier(.34,1.56,.64,1) both; }
+    @keyframes modalIn { from { opacity: 0; transform: scale(.92) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    .modal h3 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; margin-bottom: 22px; color: var(--ink); }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--ink2); }
+    .field input, .field select { background: rgba(255,255,255,.05); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--ink); outline: none; transition: border-color .2s, box-shadow .2s; }
+    .field input:focus, .field select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(184,146,58,.1); }
+    .field select option { background: #221f1a; }
+    .modal-footer { display: flex; justify-content: flex-end; gap: 9px; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border); }
+
+    /* ── REQUEST ITEMS ── */
+    .req-item { display: flex; align-items: center; gap: 14px; padding: 14px 22px; border-bottom: 1px solid var(--border); transition: background .15s; }
+    .req-item:hover { background: rgba(255,255,255,.02); }
+    .req-item:last-child { border-bottom: none; }
+    .req-info { flex: 1; }
+    .req-student { font-size: 13px; font-weight: 500; color: var(--ink); }
+    .req-book { font-size: 11.5px; color: var(--ink2); margin-top: 2px; }
+    .req-date { font-size: 10.5px; color: var(--ink2); margin-top: 2px; }
+    .req-actions { display: flex; gap: 7px; }
+    .accruing-note { font-size: 10.5px; color: #e09030; font-style: italic; }
+
+    /* ── TOAST ── */
+    .toast { position: fixed; top: 22px; right: 22px; background: var(--surface2); color: var(--ink); padding: 13px 18px; border-radius: 10px; font-size: 13px; border-left: 3px solid var(--gold); box-shadow: 0 8px 32px rgba(0,0,0,.5); transform: translateX(120%) scale(.95); transition: transform .4s cubic-bezier(.34,1.56,.64,1); z-index: 999; max-width: 280px; }
+    .toast.show { transform: translateX(0) scale(1); }
+    .toast.error { border-color: #e05a3a; }
+
+    .empty { text-align: center; padding: 36px 22px; color: var(--ink2); font-size: 13px; }
     @media(max-width:1100px){.two-col,.three-col{grid-template-columns:1fr}.stats-row{grid-template-columns:repeat(2,1fr)}}
   </style>
 </head>
 <body>
+
+<!-- ── SIDEBAR ── -->
 <aside class="sidebar">
-  <div class="sidebar-logo"><div class="logo-text">Libra<span>X</span></div><div class="logo-role">Staff Portal</div></div>
+  <div class="sidebar-logo">
+    <div class="logo-text">Libra<em>X</em></div>
+    <div class="logo-role">Staff Portal</div>
+  </div>
   <div class="nav-section">
     <div class="nav-label">Management</div>
-    <a href="#" class="nav-item active" onclick="showSection('dashboard',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
-    <a href="#" class="nav-item" onclick="showSection('requests',this)" id="nav-requests"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Borrow Requests<span class="nav-badge" id="requests-badge">0</span></a>
-    <a href="#" class="nav-item" onclick="showSection('books',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Books</a>
-    <a href="#" class="nav-item" onclick="showSection('members',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Members</a>
-    <a href="#" class="nav-item" onclick="showSection('issue',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/></svg>Issue / Return</a>
-    <a href="#" class="nav-item" onclick="showSection('fines',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Fines</a>
-    <a href="#" class="nav-item" onclick="showSection('reports',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Reports</a>
+    <a href="#" class="nav-item active" onclick="showSection('dashboard',this)">
+      <div class="nav-dot"></div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <a href="#" class="nav-item" onclick="showSection('requests',this)">
+      <div class="nav-dot"></div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+      Borrow Requests
+      <span class="nav-badge" id="requests-badge">0</span>
+    </a>
+    <a href="#" class="nav-item" onclick="showSection('books',this)">
+      <div class="nav-dot"></div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      Books
+    </a>
+    <a href="#" class="nav-item" onclick="showSection('members',this)">
+      <div class="nav-dot"></div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      Members
+    </a>
+    <a href="#" class="nav-item" onclick="showSection('issue',this)">
+      <div class="nav-dot"></div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/></svg>
+      Issue / Return
+    </a>
+    <a href="#" class="nav-item" onclick="showSection('fines',this)">
+      <div class="nav-dot"></div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Fines
+    </a>
+    <a href="#" class="nav-item" onclick="showSection('reports',this)">
+      <div class="nav-dot"></div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Reports
+    </a>
   </div>
   <div class="sidebar-footer">
     <div class="user-card">
       <div class="user-avatar" id="nav-avatar">S</div>
       <div><div class="user-name" id="nav-name">Staff</div><div class="user-role" id="nav-role">librarian</div></div>
-      <button class="logout-btn" onclick="window.location.href='/logout'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+      <button class="logout-btn" onclick="window.location.href='/logout'">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
     </div>
   </div>
 </aside>
+
 <main class="main">
-  <div id="section-dashboard">
-    <div class="page-header"><div><h1>Staff <span>Dashboard</span></h1><div class="page-date" id="today-date"></div></div></div>
+
+  <!-- DASHBOARD -->
+  <div id="section-dashboard" class="section">
+    <div class="page-header"><div><h1>Staff <em>Dashboard</em></h1><div class="page-date" id="today-date"></div></div></div>
     <div class="stats-row">
-      <div class="stat-card" style="--accent:#c9a84c;--icon-bg:rgba(201,168,76,.12)"><div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><div class="stat-num" id="stat-total-books">—</div><div class="stat-label">Total Books</div></div>
-      <div class="stat-card" style="--accent:#e05a3a;--icon-bg:rgba(192,57,43,.15)"><div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e05a3a" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="stat-num" id="stat-overdue">—</div><div class="stat-label">Overdue Books</div></div>
-      <div class="stat-card" style="--accent:#2e6b4f;--icon-bg:rgba(46,107,79,.15)"><div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5dba8a" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="stat-num" id="stat-members">—</div><div class="stat-label">Active Members</div></div>
-      <div class="stat-card" style="--accent:#f0a500;--icon-bg:rgba(240,165,0,.12)"><div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f0a500" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="stat-num" id="stat-pending-requests">—</div><div class="stat-label">Pending Requests</div></div>
+      <div class="stat-card" style="--accent:var(--gold);--icon-bg:rgba(184,146,58,.1);--glow:rgba(184,146,58,.1)"><div class="stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b8923a" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><div class="stat-num" id="stat-total-books">—</div><div class="stat-label">Total Books</div></div>
+      <div class="stat-card" style="--accent:#b03020;--icon-bg:rgba(176,48,32,.15);--glow:rgba(176,48,32,.1)"><div class="stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e05a3a" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="stat-num" id="stat-overdue">—</div><div class="stat-label">Overdue Books</div></div>
+      <div class="stat-card" style="--accent:#2a6048;--icon-bg:rgba(42,96,72,.15);--glow:rgba(42,96,72,.1)"><div class="stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5dba8a" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="stat-num" id="stat-members">—</div><div class="stat-label">Active Members</div></div>
+      <div class="stat-card" style="--accent:#c08030;--icon-bg:rgba(200,128,48,.12);--glow:rgba(200,128,48,.1)"><div class="stat-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e09030" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="stat-num" id="stat-pending-requests">—</div><div class="stat-label">Pending Requests</div></div>
     </div>
     <div class="two-col">
       <div class="card" style="display:flex;flex-direction:column">
         <div class="card-header"><div class="card-title">Recent Issues</div><button class="btn btn-outline btn-sm" onclick="showSection('issue',document.querySelectorAll('.nav-item')[4])">Issue Book</button></div>
-        <div class="table-scroll">
-          <table class="book-table">
-            <thead><tr><th>Book</th><th>Student</th><th>Due Date</th><th>Status</th></tr></thead>
-            <tbody id="recent-issues-tbody"><tr><td colspan="4"><div class="empty">Loading…</div></td></tr></tbody>
-          </table>
-        </div>
+        <div class="table-scroll"><table class="book-table"><thead><tr><th>Book</th><th>Student</th><th>Due Date</th><th>Status</th></tr></thead><tbody id="recent-issues-tbody"><tr><td colspan="4"><div class="empty">Loading…</div></td></tr></tbody></table></div>
       </div>
       <div class="card" style="display:flex;flex-direction:column">
         <div class="card-header"><div class="card-title">Overdue Alert</div></div>
-        <div class="table-scroll">
-          <table class="book-table">
-            <thead><tr><th>Student</th><th>Book</th><th>Days Late</th></tr></thead>
-            <tbody id="overdue-tbody"><tr><td colspan="3"><div class="empty">Loading…</div></td></tr></tbody>
-          </table>
+        <div class="table-scroll"><table class="book-table"><thead><tr><th>Student</th><th>Book</th><th>Days Late</th></tr></thead><tbody id="overdue-tbody"><tr><td colspan="3"><div class="empty">Loading…</div></td></tr></tbody></table></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BORROW REQUESTS -->
+  <div id="section-requests" style="display:none">
+    <div class="page-header"><div><h1>Borrow <em>Requests</em></h1><div class="page-date">Review and approve student requests</div></div><button class="btn btn-outline" onclick="loadBorrowRequests()">↻ Refresh</button></div>
+    <div class="card"><div class="card-header"><div class="card-title">All Requests</div></div><div id="borrow-requests-list"><div class="empty">Loading…</div></div></div>
+  </div>
+
+  <!-- BOOKS -->
+  <div id="section-books" style="display:none">
+    <div class="page-header"><div><h1>Book <em>Catalog</em></h1><div class="page-date">Manage the library collection</div></div><button class="btn btn-gold" onclick="openModal('add-book-modal')">+ Add Book</button></div>
+    <div class="card">
+      <div class="search-row"><div class="search-input"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" placeholder="Search books…" oninput="searchBooksStaff(this.value)"/></div></div>
+      <table class="book-table"><thead><tr><th>Book</th><th>ISBN</th><th>Genre</th><th>Total</th><th>Available</th><th>Actions</th></tr></thead><tbody id="books-tbody"><tr><td colspan="6"><div class="empty">Loading…</div></td></tr></tbody></table>
+    </div>
+  </div>
+
+  <!-- MEMBERS -->
+  <div id="section-members" style="display:none">
+    <div class="page-header"><div><h1>Student <em>Members</em></h1><div class="page-date">Manage student accounts</div></div><button class="btn btn-gold" onclick="openModal('add-member-modal')">+ Add Member</button></div>
+    <div class="card">
+      <div class="search-row"><div class="search-input"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" placeholder="Search students…" oninput="searchMembers(this.value)"/></div></div>
+      <table class="book-table"><thead><tr><th>Student</th><th>ID</th><th>Department</th><th>Issued</th><th>Fine</th><th>Status</th><th>Actions</th></tr></thead><tbody id="members-tbody"><tr><td colspan="7"><div class="empty">Loading…</div></td></tr></tbody></table>
+    </div>
+  </div>
+
+  <!-- ISSUE / RETURN -->
+  <div id="section-issue" style="display:none">
+    <div class="page-header"><div><h1>Issue / <em>Return</em></h1><div class="page-date">Issue a book or process a return</div></div></div>
+    <div class="two-col">
+      <div class="card"><div class="card-header"><div class="card-title">Issue a Book</div></div>
+        <div style="padding:26px;display:flex;flex-direction:column;gap:16px">
+          <div class="field"><label>Student ID</label><input type="text" id="issue-student-id" placeholder="e.g. STU2024001"/></div>
+          <div class="field"><label>Book ISBN or Title</label><input type="text" id="issue-book-query" placeholder="Search by ISBN or title" oninput="searchIssueBook(this.value)"/></div>
+          <div id="issue-book-results" style="display:none;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;overflow:hidden"></div>
+          <div class="field"><label>Due Date</label><input type="date" id="issue-due-date"/></div>
+          <button class="btn btn-gold" style="padding:12px;font-size:13px" onclick="issueBook()">Issue Book</button>
+        </div>
+      </div>
+      <div class="card"><div class="card-header"><div class="card-title">Process Return</div></div>
+        <div style="padding:26px;display:flex;flex-direction:column;gap:16px">
+          <div class="field"><label>Student ID</label><input type="text" id="return-student-id" placeholder="e.g. STU2024001" oninput="loadStudentIssues(this.value)"/></div>
+          <div id="student-issues-list"><div class="empty" style="padding:20px 0">Enter a student ID to see issued books</div></div>
         </div>
       </div>
     </div>
   </div>
-  <div id="section-requests" style="display:none">
-    <div class="page-header"><div><h1>Borrow <span>Requests</span></h1><div class="page-date">Review and approve student requests</div></div><button class="btn btn-outline" onclick="loadBorrowRequests()">↻ Refresh</button></div>
-    <div class="card"><div class="card-header"><div class="card-title">All Requests</div></div><div id="borrow-requests-list"><div class="empty">Loading…</div></div></div>
-  </div>
-  <div id="section-books" style="display:none">
-    <div class="page-header"><div><h1>Book <span>Catalog</span></h1><div class="page-date">Manage the library collection</div></div><button class="btn btn-gold" onclick="openModal('add-book-modal')">+ Add Book</button></div>
-    <div class="card"><div class="search-row"><div class="search-input"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" placeholder="Search books…" oninput="searchBooksStaff(this.value)"/></div></div><table class="book-table"><thead><tr><th>Book</th><th>ISBN</th><th>Genre</th><th>Total</th><th>Available</th><th>Actions</th></tr></thead><tbody id="books-tbody"><tr><td colspan="6"><div class="empty">Loading…</div></td></tr></tbody></table></div>
-  </div>
-  <div id="section-members" style="display:none">
-    <div class="page-header"><div><h1>Student <span>Members</span></h1><div class="page-date">Manage student accounts</div></div><button class="btn btn-gold" onclick="openModal('add-member-modal')">+ Add Member</button></div>
-    <div class="card"><div class="search-row"><div class="search-input"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" placeholder="Search students…" oninput="searchMembers(this.value)"/></div></div><table class="book-table"><thead><tr><th>Student</th><th>ID</th><th>Department</th><th>Issued</th><th>Fine</th><th>Status</th><th>Actions</th></tr></thead><tbody id="members-tbody"><tr><td colspan="7"><div class="empty">Loading…</div></td></tr></tbody></table></div>
-  </div>
-  <div id="section-issue" style="display:none">
-    <div class="page-header"><div><h1>Issue / <span>Return</span></h1><div class="page-date">Issue a book or process a return</div></div></div>
-    <div class="two-col">
-      <div class="card"><div class="card-header"><div class="card-title">Issue a Book</div></div><div style="padding:28px;display:flex;flex-direction:column;gap:18px"><div class="field"><label>Student ID</label><input type="text" id="issue-student-id" placeholder="e.g. STU2024001"/></div><div class="field"><label>Book ISBN or Title</label><input type="text" id="issue-book-query" placeholder="Search by ISBN or title" oninput="searchIssueBook(this.value)"/></div><div id="issue-book-results" style="display:none;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;overflow:hidden"></div><div class="field"><label>Due Date</label><input type="date" id="issue-due-date"/></div><button class="btn btn-gold" style="padding:12px" onclick="issueBook()">Issue Book</button></div></div>
-      <div class="card"><div class="card-header"><div class="card-title">Process Return</div></div><div style="padding:28px;display:flex;flex-direction:column;gap:18px"><div class="field"><label>Student ID</label><input type="text" id="return-student-id" placeholder="e.g. STU2024001" oninput="loadStudentIssues(this.value)"/></div><div id="student-issues-list"><div class="empty" style="padding:20px 0">Enter a student ID to see issued books</div></div></div></div>
+
+  <!-- FINES -->
+  <div id="section-fines" style="display:none">
+    <div class="page-header"><div><h1>Fine <em>Management</em></h1><div class="page-date">View and mark fines as paid</div></div><button class="btn btn-outline" onclick="loadFines()">↻ Refresh</button></div>
+    <div style="display:flex;gap:14px;margin-bottom:14px;font-size:11.5px;color:var(--ink2)">
+      <span><span class="badge badge-red" style="font-size:10px">Unpaid</span> &nbsp;Fine exists — click Mark Paid</span>
+      <span><span class="badge badge-orange" style="font-size:10px">Accruing</span> &nbsp;Book still out</span>
+      <span><span class="badge badge-green" style="font-size:10px">Paid</span> &nbsp;Settled</span>
+    </div>
+    <div class="card">
+      <div class="search-row"><div class="search-input"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" placeholder="Search by student name or ID…" oninput="searchFines(this.value)"/></div></div>
+      <table class="book-table"><thead><tr><th>Student</th><th>Book</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead><tbody id="fines-tbody"><tr><td colspan="5"><div class="empty">Loading…</div></td></tr></tbody></table>
     </div>
   </div>
-  <div id="section-fines" style="display:none">
-    <div class="page-header"><div><h1>Fine <span>Management</span></h1><div class="page-date">View and mark fines as paid</div></div><button class="btn btn-outline" onclick="loadFines()">↻ Refresh</button></div>
-    <div style="display:flex;gap:16px;margin-bottom:16px;font-size:12px;color:var(--ink2)"><span><span class="badge badge-red" style="font-size:10px">Unpaid</span> Fine exists — click Mark Paid</span><span><span class="badge badge-orange" style="font-size:10px">Accruing</span> Book still out</span><span><span class="badge badge-green" style="font-size:10px">Paid</span> Settled</span></div>
-    <div class="card"><div class="search-row"><div class="search-input"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" placeholder="Search by student name or ID…" oninput="searchFines(this.value)"/></div></div><table class="book-table"><thead><tr><th>Student</th><th>Book</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead><tbody id="fines-tbody"><tr><td colspan="5"><div class="empty">Loading…</div></td></tr></tbody></table></div>
-  </div>
+
+  <!-- REPORTS -->
   <div id="section-reports" style="display:none">
-    <div class="page-header"><div><h1>Library <span>Reports</span></h1></div></div>
+    <div class="page-header"><div><h1>Library <em>Reports</em></h1></div></div>
     <div class="three-col">
-      <div class="card" style="padding:24px"><div style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ink2);margin-bottom:12px">Most Issued Books</div><div id="report-top-books"><div class="empty" style="padding:10px">Loading…</div></div></div>
-      <div class="card" style="padding:24px"><div style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ink2);margin-bottom:12px">Top Borrowers</div><div id="report-top-borrowers"><div class="empty" style="padding:10px">Loading…</div></div></div>
-      <div class="card" style="padding:24px"><div style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ink2);margin-bottom:12px">Fines Summary</div><div id="report-fines-summary"><div class="empty" style="padding:10px">Loading…</div></div></div>
+      <div class="card" style="padding:22px"><div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink2);margin-bottom:14px">Most Issued Books</div><div id="report-top-books"><div class="empty" style="padding:10px">Loading…</div></div></div>
+      <div class="card" style="padding:22px"><div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink2);margin-bottom:14px">Top Borrowers</div><div id="report-top-borrowers"><div class="empty" style="padding:10px">Loading…</div></div></div>
+      <div class="card" style="padding:22px"><div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink2);margin-bottom:14px">Fines Summary</div><div id="report-fines-summary"><div class="empty" style="padding:10px">Loading…</div></div></div>
     </div>
   </div>
 </main>
+
+<!-- MODALS -->
 <div class="modal-overlay" id="add-book-modal" onclick="closeModalOutside(event,this)"><div class="modal"><h3>Add New Book</h3><div class="form-grid"><div class="field"><label>Title *</label><input type="text" id="b-title" placeholder="Book title"/></div><div class="field"><label>Author *</label><input type="text" id="b-author" placeholder="Author name"/></div><div class="field"><label>ISBN *</label><input type="text" id="b-isbn" placeholder="978-x-xxxxx-xxx-x"/></div><div class="field"><label>Genre</label><input type="text" id="b-genre" placeholder="e.g. Fiction"/></div><div class="field"><label>Publisher</label><input type="text" id="b-publisher" placeholder="Publisher name"/></div><div class="field"><label>Year</label><input type="number" id="b-year" placeholder="2024"/></div><div class="field"><label>Total Copies</label><input type="number" id="b-copies" value="1" min="1"/></div></div><div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('add-book-modal')">Cancel</button><button class="btn btn-gold" onclick="addBook()">Add Book</button></div></div></div>
+
 <div class="modal-overlay" id="add-member-modal" onclick="closeModalOutside(event,this)"><div class="modal"><h3>Add New Student</h3><div class="form-grid"><div class="field"><label>Full Name *</label><input type="text" id="m-name" placeholder="Full name"/></div><div class="field"><label>Student ID *</label><input type="text" id="m-id" placeholder="e.g. STU2024003"/></div><div class="field"><label>Email *</label><input type="email" id="m-email" placeholder="student@college.edu"/></div><div class="field"><label>Phone</label><input type="text" id="m-phone" placeholder="Phone number"/></div><div class="field"><label>Department</label><input type="text" id="m-dept" placeholder="e.g. Computer Science"/></div><div class="field"><label>Password *</label><input type="password" id="m-password" placeholder="Set a password"/></div></div><div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('add-member-modal')">Cancel</button><button class="btn btn-gold" onclick="addMember()">Add Student</button></div></div></div>
-<div class="modal-overlay" id="approve-modal" onclick="closeModalOutside(event,this)"><div class="modal"><h3>Approve Borrow Request</h3><input type="hidden" id="approve-req-id"/><div style="display:flex;flex-direction:column;gap:16px"><div class="field"><label>Due Date (default: 14 days)</label><input type="date" id="approve-due-date"/></div><div class="field"><label>Remarks (optional)</label><input type="text" id="approve-remarks" placeholder="e.g. Please collect from counter"/></div></div><div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('approve-modal')">Cancel</button><button class="btn btn-green" onclick="confirmApprove()">✓ Approve &amp; Issue</button></div></div></div>
+
+<div class="modal-overlay" id="approve-modal" onclick="closeModalOutside(event,this)"><div class="modal"><h3>Approve Borrow Request</h3><input type="hidden" id="approve-req-id"/><div style="display:flex;flex-direction:column;gap:14px"><div class="field"><label>Due Date (default: 14 days)</label><input type="date" id="approve-due-date"/></div><div class="field"><label>Remarks (optional)</label><input type="text" id="approve-remarks" placeholder="e.g. Please collect from counter"/></div></div><div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('approve-modal')">Cancel</button><button class="btn btn-green" onclick="confirmApprove()">✓ Approve &amp; Issue</button></div></div></div>
+
 <div class="modal-overlay" id="reject-modal" onclick="closeModalOutside(event,this)"><div class="modal"><h3>Reject Borrow Request</h3><input type="hidden" id="reject-req-id"/><div class="field"><label>Reason for rejection</label><input type="text" id="reject-remarks" placeholder="e.g. Book not available…"/></div><div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('reject-modal')">Cancel</button><button class="btn btn-danger" onclick="confirmReject()">✗ Reject</button></div></div></div>
+
 <div class="toast" id="toast"></div>
+
 <script>
-const covers=[{bg:'rgba(139,58,42,.25)',em:'📕'},{bg:'rgba(46,107,79,.2)',em:'📗'},{bg:'rgba(201,168,76,.2)',em:'📙'},{bg:'rgba(74,106,138,.2)',em:'📘'},{bg:'rgba(122,90,154,.2)',em:'📓'}];
+const covers=[{bg:'rgba(122,56,40,.3)',em:'📕'},{bg:'rgba(42,96,72,.25)',em:'📗'},{bg:'rgba(184,146,58,.2)',em:'📙'},{bg:'rgba(74,106,138,.25)',em:'📘'},{bg:'rgba(100,70,140,.25)',em:'📓'}];
 const cv=i=>covers[i%covers.length];
 const fmt=d=>d?new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'—';
 document.getElementById('today-date').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 const dd=new Date();dd.setDate(dd.getDate()+14);
 document.getElementById('approve-due-date').value=dd.toISOString().split('T')[0];
 const ddi=document.getElementById('issue-due-date');if(ddi)ddi.value=dd.toISOString().split('T')[0];
-function showSection(name,el){document.querySelectorAll('[id^="section-"]').forEach(s=>s.style.display='none');document.getElementById('section-'+name).style.display='block';document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));if(el)el.classList.add('active');if(name==='books')loadBooks();if(name==='members')loadMembers();if(name==='fines')loadFines();if(name==='reports')loadReports();if(name==='requests')loadBorrowRequests();}
+
+function showSection(name,el){
+  document.querySelectorAll('[id^="section-"]').forEach(s=>s.style.display='none');
+  const sec=document.getElementById('section-'+name);
+  sec.style.display='block';sec.classList.remove('section');void sec.offsetWidth;sec.classList.add('section');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  if(name==='books')loadBooks();if(name==='members')loadMembers();
+  if(name==='fines')loadFines();if(name==='reports')loadReports();
+  if(name==='requests')loadBorrowRequests();
+}
 function openModal(id){document.getElementById(id).classList.add('open')}
 function closeModal(id){document.getElementById(id).classList.remove('open')}
 function closeModalOutside(e,el){if(e.target===el)el.classList.remove('open')}
 function showToast(msg,type='info'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type==='error'?' error':'');setTimeout(()=>t.classList.remove('show'),3500);}
+
 async function loadStaffInfo(){try{const r=await fetch('/api/staff/me');const d=await r.json();if(d.success){const n=d.data.full_name;document.getElementById('nav-name').textContent=n;document.getElementById('nav-avatar').textContent=n[0].toUpperCase();document.getElementById('nav-role').textContent=d.data.staff_role;}}catch(e){}}
-async function loadDashboardStats(){try{const r=await fetch('/api/staff/dashboard-stats');const d=await r.json();if(d.success){document.getElementById('stat-total-books').textContent=d.data.total_books;document.getElementById('stat-overdue').textContent=d.data.overdue_count;document.getElementById('stat-members').textContent=d.data.active_members;}}catch(e){}try{const r=await fetch('/api/staff/borrow-requests');const d=await r.json();if(d.success){const p=(d.data||[]).filter(x=>x.status==='pending').length;document.getElementById('stat-pending-requests').textContent=p;const b=document.getElementById('requests-badge');b.style.display=p>0?'block':'none';b.textContent=p;}}catch(e){}}
-async function loadRecentIssues(){try{const r=await fetch('/api/staff/recent-issues');const d=await r.json();const tb=document.getElementById('recent-issues-tbody');if(!d.success||!d.data.length){tb.innerHTML='<tr><td colspan="4"><div class="empty">No recent issues.</div></td></tr>';return}tb.innerHTML=d.data.map((b,i)=>{const c=cv(i);const due=new Date(b.due_date);const over=!b.return_date&&due<new Date();const badge=b.return_date?'<span class="badge badge-green"><span class="badge-dot"></span>Returned</span>':over?'<span class="badge badge-red"><span class="badge-dot"></span>Overdue</span>':'<span class="badge badge-gold"><span class="badge-dot"></span>Issued</span>';return`<tr><td><div class="book-info"><div class="book-cover" style="background:${c.bg}">${c.em}</div><div><div class="book-title-text">${b.title}</div><div class="book-author-text">${b.author}</div></div></div></td><td style="font-size:13px;color:var(--ink2)">${b.student_name}<br><span style="font-size:11px;opacity:.6">${b.student_id}</span></td><td style="font-size:13px;color:${over?'#e05a3a':'var(--ink2)'}">${fmt(b.due_date)}</td><td>${badge}</td></tr>`;}).join('');}catch(e){}}
-async function loadOverdue(){try{const r=await fetch('/api/staff/overdue');const d=await r.json();const tb=document.getElementById('overdue-tbody');if(!d.success||!d.data.length){tb.innerHTML='<tr><td colspan="3"><div class="empty">No overdue books 🎉</div></td></tr>';return}tb.innerHTML=d.data.map(b=>`<tr><td style="font-size:13px">${b.student_name}<br><span style="font-size:11px;color:var(--ink2)">${b.student_id}</span></td><td style="font-size:13px;color:var(--ink2)">${b.title}</td><td><span class="badge badge-red">${b.days_overdue}d</span></td></tr>`).join('');}catch(e){}}
-async function loadBorrowRequests(){try{const r=await fetch('/api/staff/borrow-requests');const d=await r.json();const box=document.getElementById('borrow-requests-list');if(!d.success||!d.data.length){box.innerHTML='<div class="empty" style="padding:40px">No borrow requests yet.</div>';return}const p=(d.data||[]).filter(x=>x.status==='pending').length;const badge=document.getElementById('requests-badge');badge.style.display=p>0?'block':'none';badge.textContent=p;document.getElementById('stat-pending-requests').textContent=p;box.innerHTML=d.data.map((req,i)=>{const c=cv(i);const sb=req.status==='pending'?'<span class="badge badge-gold"><span class="badge-dot"></span>Pending</span>':req.status==='approved'?'<span class="badge badge-green"><span class="badge-dot"></span>Approved</span>':'<span class="badge badge-red"><span class="badge-dot"></span>Rejected</span>';const av=req.available_copies>0?`<span style="font-size:11px;color:#5dba8a">${req.available_copies} available</span>`:`<span style="font-size:11px;color:#e05a3a">None available</span>`;const ac=req.status==='pending'?`<div class="req-actions"><button class="btn btn-green btn-sm" onclick="openApprove(${req.request_id})">✓ Approve</button><button class="btn btn-danger btn-sm" onclick="openReject(${req.request_id})">✗ Reject</button></div>`:'';return`<div class="req-item"><div class="book-cover" style="background:${c.bg};width:36px;height:48px">${c.em}</div><div class="req-info"><div class="req-student">${req.student_name} <span style="font-size:11px;color:var(--ink2)">(${req.student_id})</span></div><div class="req-book">${req.title} by ${req.author}</div><div class="req-date">${av} · Requested ${fmt(req.request_date)}</div></div>${sb}&nbsp;&nbsp;${ac}</div>`;}).join('');}catch(e){}}
+async function loadDashboardStats(){
+  try{const r=await fetch('/api/staff/dashboard-stats');const d=await r.json();if(d.success){document.getElementById('stat-total-books').textContent=d.data.total_books;document.getElementById('stat-overdue').textContent=d.data.overdue_count;document.getElementById('stat-members').textContent=d.data.active_members;}}catch(e){}
+  try{const r=await fetch('/api/staff/borrow-requests');const d=await r.json();if(d.success){const p=(d.data||[]).filter(x=>x.status==='pending').length;document.getElementById('stat-pending-requests').textContent=p;const b=document.getElementById('requests-badge');b.style.display=p>0?'block':'none';b.textContent=p;}}catch(e){}
+}
+async function loadRecentIssues(){try{const r=await fetch('/api/staff/recent-issues');const d=await r.json();const tb=document.getElementById('recent-issues-tbody');if(!d.success||!d.data.length){tb.innerHTML='<tr><td colspan="4"><div class="empty">No recent issues.</div></td></tr>';return}tb.innerHTML=d.data.map((b,i)=>{const c=cv(i);const due=new Date(b.due_date);const over=!b.return_date&&due<new Date();const badge=b.return_date?'<span class="badge badge-green"><span class="badge-dot"></span>Returned</span>':over?'<span class="badge badge-red"><span class="badge-dot"></span>Overdue</span>':'<span class="badge badge-gold"><span class="badge-dot"></span>Issued</span>';return`<tr><td><div class="book-info"><div class="book-cover" style="background:${c.bg}">${c.em}</div><div><div class="book-title-text">${b.title}</div><div class="book-author-text">${b.author}</div></div></div></td><td style="font-size:12px;color:var(--ink2)">${b.student_name}<br><span style="font-size:10px;opacity:.6">${b.student_id}</span></td><td style="font-size:12px;color:${over?'#e05a3a':'var(--ink2)'}">${fmt(b.due_date)}</td><td>${badge}</td></tr>`;}).join('');}catch(e){}}
+async function loadOverdue(){try{const r=await fetch('/api/staff/overdue');const d=await r.json();const tb=document.getElementById('overdue-tbody');if(!d.success||!d.data.length){tb.innerHTML='<tr><td colspan="3"><div class="empty">No overdue books 🎉</div></td></tr>';return}tb.innerHTML=d.data.map(b=>`<tr><td style="font-size:12px">${b.student_name}<br><span style="font-size:10px;color:var(--ink2)">${b.student_id}</span></td><td style="font-size:12px;color:var(--ink2)">${b.title}</td><td><span class="badge badge-red">${b.days_overdue}d</span></td></tr>`).join('');}catch(e){}}
+async function loadBorrowRequests(){try{const r=await fetch('/api/staff/borrow-requests');const d=await r.json();const box=document.getElementById('borrow-requests-list');if(!d.success||!d.data.length){box.innerHTML='<div class="empty" style="padding:40px">No borrow requests yet.</div>';return}const p=(d.data||[]).filter(x=>x.status==='pending').length;const badge=document.getElementById('requests-badge');badge.style.display=p>0?'block':'none';badge.textContent=p;document.getElementById('stat-pending-requests').textContent=p;box.innerHTML=d.data.map((req,i)=>{const c=cv(i);const sb=req.status==='pending'?'<span class="badge badge-gold"><span class="badge-dot"></span>Pending</span>':req.status==='approved'?'<span class="badge badge-green"><span class="badge-dot"></span>Approved</span>':'<span class="badge badge-red"><span class="badge-dot"></span>Rejected</span>';const av=req.available_copies>0?`<span style="font-size:10.5px;color:#5dba8a">${req.available_copies} available</span>`:`<span style="font-size:10.5px;color:#e05a3a">None available</span>`;const ac=req.status==='pending'?`<div class="req-actions"><button class="btn btn-green btn-sm" onclick="openApprove(${req.request_id})">✓ Approve</button><button class="btn btn-danger btn-sm" onclick="openReject(${req.request_id})">✗ Reject</button></div>`:'';return`<div class="req-item"><div class="book-cover" style="background:${c.bg};width:34px;height:46px">${c.em}</div><div class="req-info"><div class="req-student">${req.student_name} <span style="font-size:10.5px;color:var(--ink2)">(${req.student_id})</span></div><div class="req-book">${req.title} by ${req.author}</div><div class="req-date">${av} · ${fmt(req.request_date)}</div></div>${sb}&nbsp;&nbsp;${ac}</div>`;}).join('');}catch(e){}}
 function openApprove(id){document.getElementById('approve-req-id').value=id;document.getElementById('approve-remarks').value='';openModal('approve-modal')}
 function openReject(id){document.getElementById('reject-req-id').value=id;document.getElementById('reject-remarks').value='';openModal('reject-modal')}
 async function confirmApprove(){const id=document.getElementById('approve-req-id').value;const due=document.getElementById('approve-due-date').value;const remarks=document.getElementById('approve-remarks').value||'Approved';try{const r=await fetch('/api/staff/borrow-requests/'+id+'/approve',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({due_date:due,remarks})});const d=await r.json();if(d.success){showToast('Approved!');closeModal('approve-modal');loadBorrowRequests();loadDashboardStats();}else showToast(d.message||'Failed.','error');}catch(e){showToast('Error.','error')}}
 async function confirmReject(){const id=document.getElementById('reject-req-id').value;const remarks=document.getElementById('reject-remarks').value||'Rejected';try{const r=await fetch('/api/staff/borrow-requests/'+id+'/reject',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({remarks})});const d=await r.json();if(d.success){showToast('Rejected.');closeModal('reject-modal');loadBorrowRequests();loadDashboardStats();}else showToast(d.message||'Failed.','error');}catch(e){showToast('Error.','error')}}
 let bt;
-async function loadBooks(q=''){try{const url=q?'/api/books/search?q='+encodeURIComponent(q):'/api/books';const r=await fetch(url);const d=await r.json();const tb=document.getElementById('books-tbody');if(!d.success||!d.data.length){tb.innerHTML='<tr><td colspan="6"><div class="empty">No books found.</div></td></tr>';return}tb.innerHTML=d.data.map((b,i)=>{const c=cv(i);const av=b.available_copies>0?`<span class="badge badge-green">${b.available_copies}</span>`:`<span class="badge badge-red">0</span>`;return`<tr><td><div class="book-info"><div class="book-cover" style="background:${c.bg}">${c.em}</div><div><div class="book-title-text">${b.title}</div><div class="book-author-text">${b.author}</div></div></div></td><td style="font-size:12px;color:var(--ink2);font-family:monospace">${b.isbn}</td><td style="font-size:13px;color:var(--ink2)">${b.genre||'—'}</td><td>${b.total_copies}</td><td>${av}</td><td><button class="btn btn-danger btn-sm" onclick="deleteBook(${b.book_id},'${b.title.replace(/'/g,"\\'")}')">Delete</button></td></tr>`;}).join('');}catch(e){}}
+async function loadBooks(q=''){try{const url=q?'/api/books/search?q='+encodeURIComponent(q):'/api/books';const r=await fetch(url);const d=await r.json();const tb=document.getElementById('books-tbody');if(!d.success||!d.data.length){tb.innerHTML='<tr><td colspan="6"><div class="empty">No books found.</div></td></tr>';return}tb.innerHTML=d.data.map((b,i)=>{const c=cv(i);const av=b.available_copies>0?`<span class="badge badge-green">${b.available_copies}</span>`:`<span class="badge badge-red">0</span>`;return`<tr><td><div class="book-info"><div class="book-cover" style="background:${c.bg}">${c.em}</div><div><div class="book-title-text">${b.title}</div><div class="book-author-text">${b.author}</div></div></div></td><td style="font-size:11.5px;color:var(--ink2);font-family:monospace">${b.isbn}</td><td style="font-size:12px;color:var(--ink2)">${b.genre||'—'}</td><td>${b.total_copies}</td><td>${av}</td><td><button class="btn btn-danger btn-sm" onclick="deleteBook(${b.book_id},'${b.title.replace(/'/g,"\\'")}')">Delete</button></td></tr>`;}).join('');}catch(e){}}
 function searchBooksStaff(q){clearTimeout(bt);bt=setTimeout(()=>loadBooks(q),400)}
 async function addBook(){const p={title:document.getElementById('b-title').value.trim(),author:document.getElementById('b-author').value.trim(),isbn:document.getElementById('b-isbn').value.trim(),genre:document.getElementById('b-genre').value.trim(),publisher:document.getElementById('b-publisher').value.trim(),publish_year:document.getElementById('b-year').value,total_copies:document.getElementById('b-copies').value||1};if(!p.title||!p.author||!p.isbn){showToast('Title, Author and ISBN required.','error');return}try{const r=await fetch('/api/staff/books',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});const d=await r.json();if(d.success){showToast('Book added!');closeModal('add-book-modal');loadBooks();}else showToast(d.message||'Failed.','error');}catch(e){showToast('Error.','error')}}
 async function deleteBook(id,title){if(!confirm(`Delete "${title}"?`))return;try{const r=await fetch('/api/staff/books/'+id,{method:'DELETE'});const d=await r.json();if(d.success){showToast('Deleted.');loadBooks();}else showToast(d.message,'error');}catch(e){showToast('Error.','error')}}
 let mt;
-async function loadMembers(q=''){try{const url=q?'/api/staff/members?q='+encodeURIComponent(q):'/api/staff/members';const r=await fetch(url);const d=await r.json();const tb=document.getElementById('members-tbody');if(!d.success||!d.data.length){tb.innerHTML='<tr><td colspan="7"><div class="empty">No members found.</div></td></tr>';return}tb.innerHTML=d.data.map(m=>{const init=m.full_name[0].toUpperCase();const active=m.is_active?'<span class="badge badge-green">Active</span>':'<span class="badge badge-red">Inactive</span>';const fine=m.fine_due>0?`<span style="color:#e05a3a;font-weight:600">₹${m.fine_due}</span>`:'<span style="color:var(--ink2)">₹0</span>';const toggle=m.is_active?`<button class="btn btn-danger btn-sm" onclick="toggleMember('${m.student_id}',0)">Deactivate</button>`:`<button class="btn btn-outline btn-sm" onclick="toggleMember('${m.student_id}',1)">Activate</button>`;return`<tr><td><div class="book-info"><div style="width:34px;height:34px;border-radius:50%;background:var(--gold);display:grid;place-items:center;font-weight:700;color:#1a1814;flex-shrink:0;font-size:13px">${init}</div><div><div class="book-title-text">${m.full_name}</div><div class="book-author-text">${m.email}</div></div></div></td><td style="font-family:monospace;font-size:12px;color:var(--ink2)">${m.student_id}</td><td style="font-size:13px;color:var(--ink2)">${m.department||'—'}</td><td>${m.books_issued||0}</td><td>${fine}</td><td>${active}</td><td>${toggle}</td></tr>`;}).join('');}catch(e){}}
+async function loadMembers(q=''){try{const url=q?'/api/staff/members?q='+encodeURIComponent(q):'/api/staff/members';const r=await fetch(url);const d=await r.json();const tb=document.getElementById('members-tbody');if(!d.success||!d.data.length){tb.innerHTML='<tr><td colspan="7"><div class="empty">No members found.</div></td></tr>';return}tb.innerHTML=d.data.map(m=>{const init=m.full_name[0].toUpperCase();const active=m.is_active?'<span class="badge badge-green">Active</span>':'<span class="badge badge-red">Inactive</span>';const fine=m.fine_due>0?`<span style="color:#e05a3a;font-weight:600">₹${m.fine_due}</span>`:'<span style="color:var(--ink2)">₹0</span>';const toggleBtn=m.is_active?`<button class="btn btn-danger btn-sm" onclick="toggleMember('${m.student_id}',0)">Deactivate</button>`:`<button class="btn btn-outline btn-sm" onclick="toggleMember('${m.student_id}',1)">Activate</button>`;const deleteBtn=`<button class="btn btn-sm" style="background:rgba(120,0,0,.25);color:#e05a3a;border:1px solid rgba(120,0,0,.4)" onclick="deleteMember('${m.student_id}','${m.full_name.replace(/'/g,"\\'")}')">Delete</button>`;return`<tr><td><div class="book-info"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:grid;place-items:center;font-weight:700;color:#0d0c0a;flex-shrink:0;font-size:13px">${init}</div><div><div class="book-title-text">${m.full_name}</div><div class="book-author-text">${m.email}</div></div></div></td><td style="font-family:monospace;font-size:11px;color:var(--ink2)">${m.student_id}</td><td style="font-size:12px;color:var(--ink2)">${m.department||'—'}</td><td>${m.books_issued||0}</td><td>${fine}</td><td>${active}</td><td><div class="btn-actions">${toggleBtn}${deleteBtn}</div></td></tr>`;}).join('');}catch(e){console.error(e)}}
 function searchMembers(q){clearTimeout(mt);mt=setTimeout(()=>loadMembers(q),400)}
 async function addMember(){const p={full_name:document.getElementById('m-name').value.trim(),student_id:document.getElementById('m-id').value.trim(),email:document.getElementById('m-email').value.trim(),phone:document.getElementById('m-phone').value.trim(),department:document.getElementById('m-dept').value.trim(),password:document.getElementById('m-password').value};if(!p.full_name||!p.student_id||!p.email||!p.password){showToast('All required fields must be filled.','error');return}try{const r=await fetch('/api/staff/members',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});const d=await r.json();if(d.success){showToast('Student added!');closeModal('add-member-modal');loadMembers();}else showToast(d.message||'Failed.','error');}catch(e){showToast('Error.','error')}}
-async function toggleMember(id,status){try{const r=await fetch('/api/staff/members/'+id+'/toggle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({is_active:status})});const d=await r.json();if(d.success){showToast(status?'Activated.':'Deactivated.');loadMembers();}}catch(e){showToast('Error.','error')}}
+async function toggleMember(id,status){try{const r=await fetch('/api/staff/members/'+id+'/toggle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({is_active:status})});const d=await r.json();if(d.success){showToast(status?'Activated.':'Deactivated.');loadMembers();}else showToast(d.message,'error');}catch(e){showToast('Error.','error')}}
+async function deleteMember(id,name){if(!confirm(`Permanently delete "${name}" (${id})?\n\nThis will also delete all their reservations, borrow requests and fines.\n\nThis CANNOT be undone.`))return;try{const r=await fetch('/api/staff/members/'+id+'/delete',{method:'DELETE'});const d=await r.json();if(d.success){showToast('Student deleted permanently.');loadMembers();loadDashboardStats();}else showToast(d.message||'Could not delete. Student may have active issues.','error');}catch(e){showToast('Error.','error')}}
 let issueBookId=null,it;
-function searchIssueBook(q){clearTimeout(it);const box=document.getElementById('issue-book-results');if(!q.trim()){box.style.display='none';issueBookId=null;return}it=setTimeout(async()=>{try{const r=await fetch('/api/books/search?q='+encodeURIComponent(q));const d=await r.json();if(!d.success||!d.data.length){box.style.display='block';box.innerHTML='<div class="empty" style="padding:12px">No books found</div>';return}box.style.display='block';box.innerHTML=d.data.slice(0,4).map(b=>`<div onclick="selectBook(${b.book_id},'${b.title.replace(/'/g,"\\'")}','${b.isbn}')" style="padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.05)'" onmouseout="this.style.background=''">${b.title} <span style="font-size:11px;color:var(--ink2)">by ${b.author}</span> ${b.available_copies>0?'<span class="badge badge-green" style="float:right;font-size:10px">Available</span>':'<span class="badge badge-red" style="float:right;font-size:10px">None</span>'}</div>`).join('');}catch(e){box.style.display='none'}},400)}
+function searchIssueBook(q){clearTimeout(it);const box=document.getElementById('issue-book-results');if(!q.trim()){box.style.display='none';issueBookId=null;return}it=setTimeout(async()=>{try{const r=await fetch('/api/books/search?q='+encodeURIComponent(q));const d=await r.json();if(!d.success||!d.data.length){box.style.display='block';box.innerHTML='<div class="empty" style="padding:12px">No books found</div>';return}box.style.display='block';box.innerHTML=d.data.slice(0,4).map(b=>`<div onclick="selectBook(${b.book_id},'${b.title.replace(/'/g,"\\'")}','${b.isbn}')" style="padding:11px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;font-size:13px" onmouseover="this.style.background='rgba(255,255,255,.04)'" onmouseout="this.style.background=''">${b.title} <span style="font-size:10.5px;color:var(--ink2)">by ${b.author}</span> ${b.available_copies>0?'<span class="badge badge-green" style="float:right;font-size:9.5px">Available</span>':'<span class="badge badge-red" style="float:right;font-size:9.5px">None</span>'}</div>`).join('');}catch(e){box.style.display='none'}},400)}
 function selectBook(id,title,isbn){issueBookId=id;document.getElementById('issue-book-query').value=title+' ('+isbn+')';document.getElementById('issue-book-results').style.display='none';}
 async function issueBook(){const sid=document.getElementById('issue-student-id').value.trim();const due=document.getElementById('issue-due-date').value;if(!sid||!issueBookId||!due){showToast('Fill all fields and select a book.','error');return}try{const r=await fetch('/api/staff/issue',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({student_id:sid,book_id:issueBookId,due_date:due})});const d=await r.json();if(d.success){showToast('Book issued!');document.getElementById('issue-student-id').value='';document.getElementById('issue-book-query').value='';issueBookId=null;loadRecentIssues();}else showToast(d.message||'Failed.','error');}catch(e){showToast('Error.','error')}}
 let rt;
-function loadStudentIssues(id){clearTimeout(rt);if(id.length<5)return;rt=setTimeout(async()=>{try{const r=await fetch('/api/staff/student-issued/'+id);const d=await r.json();const box=document.getElementById('student-issues-list');if(!d.success||!d.data.length){box.innerHTML='<div class="empty" style="padding:20px 0">No active issues for this student.</div>';return}box.innerHTML=d.data.map((b,i)=>{const c=cv(i);const due=new Date(b.due_date);const over=due<new Date();return`<div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border)"><div class="book-cover" style="background:${c.bg};width:32px;height:42px;font-size:15px">${c.em}</div><div style="flex:1"><div style="font-size:13px;font-weight:500">${b.title}</div><div style="font-size:11px;color:var(--ink2)">Due: ${fmt(b.due_date)} ${over?'<span style="color:#e05a3a">(Overdue)</span>':''}</div></div><button class="btn btn-gold btn-sm" onclick="returnBook(${b.issue_id},'${b.title.replace(/'/g,"\\'")}')">Return</button></div>`;}).join('');}catch(e){}},600)}
+function loadStudentIssues(id){clearTimeout(rt);if(id.length<5)return;rt=setTimeout(async()=>{try{const r=await fetch('/api/staff/student-issued/'+id);const d=await r.json();const box=document.getElementById('student-issues-list');if(!d.success||!d.data.length){box.innerHTML='<div class="empty" style="padding:20px 0">No active issues for this student.</div>';return}box.innerHTML=d.data.map((b,i)=>{const c=cv(i);const due=new Date(b.due_date);const over=due<new Date();return`<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)"><div class="book-cover" style="background:${c.bg};width:30px;height:40px;font-size:14px">${c.em}</div><div style="flex:1"><div style="font-size:13px;font-weight:500">${b.title}</div><div style="font-size:10.5px;color:var(--ink2)">Due: ${fmt(b.due_date)} ${over?'<span style="color:#e05a3a">(Overdue)</span>':''}</div></div><button class="btn btn-gold btn-sm" onclick="returnBook(${b.issue_id},'${b.title.replace(/'/g,"\\'")}')">Return</button></div>`;}).join('');}catch(e){}},600)}
 async function returnBook(issueId,title){if(!confirm(`Mark "${title}" as returned?`))return;try{const r=await fetch('/api/staff/return/'+issueId,{method:'POST'});const d=await r.json();if(d.success){showToast(d.fine>0?`Returned! Fine of ₹${d.fine} applied.`:'Book returned!');const sid=document.getElementById('return-student-id').value;if(sid)loadStudentIssues(sid);loadRecentIssues();}else showToast(d.message||'Failed.','error');}catch(e){showToast('Error.','error')}}
 let ft;
-async function loadFines(q=''){try{const url=q?'/api/staff/fines?q='+encodeURIComponent(q):'/api/staff/fines';const r=await fetch(url);const d=await r.json();const tb=document.getElementById('fines-tbody');if(!d.success||!d.data.length){tb.innerHTML='<tr><td colspan="5"><div class="empty">No fines found.</div></td></tr>';return}tb.innerHTML=d.data.map(f=>{let sb='';if(f.accruing)sb='<span class="badge badge-orange"><span class="badge-dot"></span>Accruing</span>';else if(f.paid)sb='<span class="badge badge-green"><span class="badge-dot"></span>Paid</span>';else sb='<span class="badge badge-red"><span class="badge-dot"></span>Unpaid</span>';let action='—';if(!f.paid&&!f.accruing&&f.fine_id)action=`<button class="btn btn-gold btn-sm" onclick="markFinePaid(${f.fine_id})">Mark Paid</button>`;else if(f.accruing)action='<span class="accruing-note">Return book first</span>';return`<tr><td style="font-size:13px">${f.student_name}<br><span style="font-size:11px;color:var(--ink2)">${f.student_id}</span></td><td style="font-size:13px;color:var(--ink2)">${f.title}</td><td style="font-weight:600;color:${f.accruing?'#f0a500':f.paid?'var(--ink2)':'#e05a3a'}">₹${f.fine_amount}</td><td>${sb}</td><td>${action}</td></tr>`;}).join('');}catch(e){}}
+async function loadFines(q=''){try{const url=q?'/api/staff/fines?q='+encodeURIComponent(q):'/api/staff/fines';const r=await fetch(url);const d=await r.json();const tb=document.getElementById('fines-tbody');if(!d.success||!d.data.length){tb.innerHTML='<tr><td colspan="5"><div class="empty">No fines found.</div></td></tr>';return}tb.innerHTML=d.data.map(f=>{let sb='';if(f.accruing)sb='<span class="badge badge-orange"><span class="badge-dot"></span>Accruing</span>';else if(f.paid)sb='<span class="badge badge-green"><span class="badge-dot"></span>Paid</span>';else sb='<span class="badge badge-red"><span class="badge-dot"></span>Unpaid</span>';let action='—';if(!f.paid&&!f.accruing&&f.fine_id)action=`<button class="btn btn-gold btn-sm" onclick="markFinePaid(${f.fine_id})">Mark Paid</button>`;else if(f.accruing)action='<span class="accruing-note">Return book first</span>';return`<tr><td style="font-size:12.5px">${f.student_name}<br><span style="font-size:10px;color:var(--ink2)">${f.student_id}</span></td><td style="font-size:12px;color:var(--ink2)">${f.title}</td><td style="font-weight:600;color:${f.accruing?'#e09030':f.paid?'var(--ink2)':'#e05a3a'}">₹${f.fine_amount}</td><td>${sb}</td><td>${action}</td></tr>`;}).join('');}catch(e){}}
 function searchFines(q){clearTimeout(ft);ft=setTimeout(()=>loadFines(q),400)}
 async function markFinePaid(id){if(!id){showToast('Return the book first.','error');return}try{const r=await fetch('/api/staff/fines/'+id+'/pay',{method:'POST'});const d=await r.json();if(d.success){showToast('Fine marked as paid.');loadFines();loadDashboardStats();}else showToast(d.message||'Failed.','error');}catch(e){showToast('Error.','error')}}
-async function loadReports(){try{const r=await fetch('/api/staff/reports');const d=await r.json();if(!d.success)return;document.getElementById('report-top-books').innerHTML=(d.data.top_books||[]).map((b,i)=>`<div style="display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px solid var(--border);color:var(--ink)"><span>${i+1}. ${b.title}</span><span class="badge badge-gold">${b.issue_count}x</span></div>`).join('')||'<div class="empty" style="padding:10px">No data</div>';document.getElementById('report-top-borrowers').innerHTML=(d.data.top_borrowers||[]).map((s,i)=>`<div style="display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px solid var(--border);color:var(--ink)"><span>${i+1}. ${s.full_name}</span><span class="badge badge-blue">${s.issue_count} books</span></div>`).join('')||'<div class="empty" style="padding:10px">No data</div>';const fs=d.data.fines_summary||{};document.getElementById('report-fines-summary').innerHTML=`<div style="display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px solid var(--border)"><span style="color:var(--ink2)">Total</span><span style="color:var(--ink);font-weight:600">₹${fs.total||0}</span></div><div style="display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px solid var(--border)"><span style="color:var(--ink2)">Collected</span><span style="color:#5dba8a;font-weight:600">₹${fs.paid||0}</span></div><div style="display:flex;justify-content:space-between;font-size:13px;padding:7px 0"><span style="color:var(--ink2)">Pending</span><span style="color:#e05a3a;font-weight:600">₹${fs.unpaid||0}</span></div>`;}catch(e){}}
+async function loadReports(){try{const r=await fetch('/api/staff/reports');const d=await r.json();if(!d.success)return;document.getElementById('report-top-books').innerHTML=(d.data.top_books||[]).map((b,i)=>`<div style="display:flex;justify-content:space-between;font-size:12.5px;padding:7px 0;border-bottom:1px solid var(--border);color:var(--ink)"><span>${i+1}. ${b.title}</span><span class="badge badge-gold">${b.issue_count}x</span></div>`).join('')||'<div class="empty" style="padding:10px">No data</div>';document.getElementById('report-top-borrowers').innerHTML=(d.data.top_borrowers||[]).map((s,i)=>`<div style="display:flex;justify-content:space-between;font-size:12.5px;padding:7px 0;border-bottom:1px solid var(--border);color:var(--ink)"><span>${i+1}. ${s.full_name}</span><span class="badge badge-blue">${s.issue_count} books</span></div>`).join('')||'<div class="empty" style="padding:10px">No data</div>';const fs=d.data.fines_summary||{};document.getElementById('report-fines-summary').innerHTML=`<div style="display:flex;justify-content:space-between;font-size:12.5px;padding:7px 0;border-bottom:1px solid var(--border)"><span style="color:var(--ink2)">Total</span><span style="color:var(--ink);font-weight:600">₹${fs.total||0}</span></div><div style="display:flex;justify-content:space-between;font-size:12.5px;padding:7px 0;border-bottom:1px solid var(--border)"><span style="color:var(--ink2)">Collected</span><span style="color:#5dba8a;font-weight:600">₹${fs.paid||0}</span></div><div style="display:flex;justify-content:space-between;font-size:12.5px;padding:7px 0"><span style="color:var(--ink2)">Pending</span><span style="color:#e05a3a;font-weight:600">₹${fs.unpaid||0}</span></div>`;}catch(e){}}
 loadStaffInfo();loadDashboardStats();loadRecentIssues();loadOverdue();
 </script>
 </body>

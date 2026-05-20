@@ -695,6 +695,112 @@ def api_change_password():
         return jsonify({"success": True, "message": "Password changed successfully!"})
     except Exception as e:
         print(f"[ERR] {e}"); return jsonify({"success": False, "message": str(e)})
-        
+
+@app.route('/api/student/recommendations')
+@login_required
+def api_student_recommendations():
+    try:
+        from sklearn.feature_extraction.text import TfidfVectorizer
+        from sklearn.metrics.pairwise import cosine_similarity
+        import numpy as np
+
+        conn = get_db(); cur = conn.cursor()
+
+        # ── Step 1: Load ALL books from Oracle ──
+        cur.execute("""
+        SELECT book_id, title, author,
+               NVL(genre, 'General') as genre
+        FROM books
+        WHERE ROWNUM <= 500
+        """)
+        all_books = cur.fetchall()
+
+        if not all_books:
+            cur.close(); conn.close()
+            return jsonify({"success": True, "data": [],
+                "message": "No books in catalog yet."})
+
+        # ── Step 2: Get student's borrowed book IDs ──
+        cur.execute("""
+            SELECT DISTINCT book_id FROM book_issues
+            WHERE student_id = :1
+        """, [session['user_id']])
+        borrowed_ids = set(r[0] for r in cur.fetchall())
+
+        cur.close(); conn.close()
+
+        if not borrowed_ids:
+            return jsonify({"success": True, "data": [],
+                "message": "Borrow some books first to get recommendations!"})
+
+        # ── Step 3: Build feature strings for TF-IDF ──
+        # Each book = "genre genre author" (genre repeated to give it more weight)
+        book_ids    = [b[0] for b in all_books]
+        book_titles = [b[1] for b in all_books]
+        book_authors= [b[2] for b in all_books]
+        book_genres = [b[3] for b in all_books]
+
+        features = [
+            f"{genre} {genre} {author}"
+            for genre, author in zip(book_genres, book_authors)
+        ]
+
+        # ── Step 4: TF-IDF Vectorization ──
+        vectorizer = TfidfVectorizer(stop_words='english')
+        tfidf_matrix = vectorizer.fit_transform(features)
+
+        # ── Step 5: Build a profile vector for this student ──
+        # Average the vectors of all books they've borrowed
+        borrowed_indices = [
+            i for i, bid in enumerate(book_ids) if bid in borrowed_ids
+        ]
+        student_profile = np.asarray(
+            tfidf_matrix[borrowed_indices].mean(axis=0)
+        )
+
+        # ── Step 6: Cosine similarity against all books ──
+        similarities = cosine_similarity(student_profile, tfidf_matrix)[0]
+
+        # ── Step 7: Rank books — exclude already borrowed ──
+        scored = [
+            (book_ids[i], book_titles[i], book_authors[i],
+             book_genres[i], float(similarities[i]))
+            for i in range(len(book_ids))
+            if book_ids[i] not in borrowed_ids
+        ]
+        scored.sort(key=lambda x: x[4], reverse=True)
+        top5 = scored[:5]
+
+        if not top5:
+            return jsonify({"success": True, "data": [],
+                "message": "You've borrowed everything similar! Try a new genre."})
+
+        # ── Step 8: Build response ──
+        results = []
+        for book_id, title, author, genre, score in top5:
+            # Find what the student read that's similar
+            similar_to = ""
+            for i in borrowed_indices:
+                if book_genres[i].lower() == genre.lower():
+                    similar_to = f"Similar to '{book_titles[i]}' which you read"
+                    break
+            if not similar_to:
+                similar_to = f"Matches your reading profile — {round(score*100)}% similarity"
+
+            results.append({
+                "title":  title,
+                "author": author,
+                "genre":  genre,
+                "reason": similar_to,
+                "score":  round(score * 100, 1)
+            })
+
+        return jsonify({"success": True, "data": results,
+                        "model": "scikit-learn TF-IDF + Cosine Similarity"})
+
+    except Exception as e:
+        print(f"[ERR] Recommendations: {e}")
+        return jsonify({"success": False, "message": str(e)})
+    
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

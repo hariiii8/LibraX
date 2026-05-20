@@ -1,2 +1,6 @@
 flask
 oracledb
+python-dotenv
+google-generativeai
+scikit-learn
+numpy
